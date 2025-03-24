@@ -6,8 +6,7 @@ from .models import Project, Item
 from datetime import date
 from django.contrib.auth import logout
 import json
-
-
+from django.utils import timezone
 
 
 @login_required
@@ -17,18 +16,16 @@ def item_edit(request, item_id):
     file_updates = [upd for upd in (item.updates or []) if upd.get('file')]
     
     if request.method == 'POST':
-        # Check if this is the update form submission (for adding an update with file)
+        # Check if this is an update submission (adding an update with file)
         if 'update_form' in request.POST:
             update_comment = request.POST.get('update_comment', '')
             update_file = request.FILES.get('update_file')
             new_update = {'timestamp': timezone.now().isoformat(), 'comment': update_comment}
             if update_file:
-                # Save the file using Django's default storage
                 from django.core.files.storage import default_storage
                 from django.core.files.base import ContentFile
                 file_path = default_storage.save(f'updates/{update_file.name}', ContentFile(update_file.read()))
                 new_update['file'] = file_path
-            # Append the new update to the existing updates list
             updates = item.updates if item.updates else []
             updates.append(new_update)
             item.updates = updates
@@ -36,7 +33,6 @@ def item_edit(request, item_id):
             messages.success(request, "Update added successfully!")
             return redirect('item_edit', item_id=item.id)
         else:
-            # Process the main item edit form
             form = ItemForm(request.POST, instance=item)
             if form.is_valid():
                 form.save()
@@ -50,6 +46,8 @@ def item_edit(request, item_id):
         'file_updates': file_updates,
     }
     return render(request, 'item_edit.html', context)
+
+
 
 @login_required
 def delete_update(request, item_id, timestamp):
