@@ -11,6 +11,18 @@ import json
 
 
 
+@login_required
+def item_edit(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    if request.method == 'POST':
+        form = ItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Item updated successfully!")
+            return redirect('project_detail', project_id=item.project.id)
+    else:
+        form = ItemForm(instance=item)
+    return render(request, 'item_edit.html', {'form': form, 'item': item})
 
 
 @login_required
@@ -144,9 +156,6 @@ def dashboard(request):
         'table_data': table_data,  # pass this to the template
     }
     return render(request, 'dashboard.html', context)
-
-
-
 
 
 
