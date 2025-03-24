@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}My Projects{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>My Projects</h1>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Logo</th>
+                <th>Contacts</th>
+                <th>Items Count</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for project in projects %}
+            <tr>
+                <td>{{ project.name }}</td>
+                <td>{{ project.description }}</td>
+                <td>
+                    {% if project.logo %}
+                        <img src="{{ project.logo.url }}" alt="Logo" width="60">
+                    {% else %}
+                        No Logo
+                    {% endif %}
+                </td>
+                <td>
+                    {% if project.contacts %}
+                        {% for contact in project.contacts %}
+                            <div>
+                                <strong>{{ contact.name }}</strong><br>
+                                Email: {{ contact.email }}<br>
+                                Phone: {{ contact.phone }}<br>
+                                Role: {{ contact.role }}
+                            </div>
+                            <hr>
+                        {% endfor %}
+                    {% else %}
+                        No contacts
+                    {% endif %}
+                </td>
+                <td>
+                    {% if project.items.count %}
+                        {{ project.items.count }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'project_detail' project.id %}" class="btn btn-sm btn-primary">View Details</a>
+                    <a href="{% url 'item_create' project.id %}" class="btn btn-sm btn-secondary ms-2">Add Item</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+

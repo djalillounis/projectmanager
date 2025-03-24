@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Create New Project{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Create New Project</h2>
+    
+    <form method="post" enctype="multipart/form-data" id="project-form">
+        {% csrf_token %}
+        
+        <!-- Name Field -->
+        <div class="mb-3">
+            <label for="id_name" class="form-label">Name</label>
+            {{ form.name }}
+        </div>
+        
+        <!-- Description Field -->
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Description</label>
+            {{ form.description }}
+        </div>
+        
+        <!-- Logo Field -->
+        <div class="mb-3">
+            <label for="id_logo" class="form-label">Logo</label>
+            {{ form.logo }}
+        </div>
+        
+        <!-- Contacts Section -->
+        <div class="mb-3">
+            <label class="form-label">Contacts</label>
+            <!-- The container where new contact rows go -->
+            <div id="contacts-container" class="row g-3 mb-2"></div>
+            
+            <!-- Add Contact Button -->
+            <button type="button" class="btn btn-secondary" id="add-contact-btn">
+                + Add Contact
+            </button>
+            
+            <!-- Hidden input to store final JSON -->
+            <input type="hidden" name="contacts_json" id="contacts-json">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Create Project</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// A template for a single contact row
+function getContactRowHTML(index) {
+    return `
+    <div class="row mb-2 contact-row" data-index="${index}">
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Name" name="contact_name_${index}">
+        </div>
+        <div class="col-md-3">
+            <input type="email" class="form-control" placeholder="Email" name="contact_email_${index}">
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Phone" name="contact_phone_${index}">
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Role" name="contact_role_${index}">
+        </div>
+        <div class="col-md-1 d-flex align-items-center">
+            <button type="button" class="btn btn-danger remove-contact-btn">&times;</button>
+        </div>
+    </div>
+    `;
+}
+
+let contactIndex = 0;
+
+function addContactRow() {
+    const container = document.getElementById('contacts-container');
+    container.insertAdjacentHTML('beforeend', getContactRowHTML(contactIndex));
+    contactIndex++;
+}
+
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('remove-contact-btn')) {
+        e.target.closest('.contact-row').remove();
+    }
+});
+
+document.getElementById('add-contact-btn').addEventListener('click', function() {
+    addContactRow();
+});
+
+// Before form submission, gather all contacts into JSON
+document.getElementById('project-form').addEventListener('submit', function(e) {
+    const container = document.getElementById('contacts-container');
+    const rows = container.querySelectorAll('.contact-row');
+    let contactsData = [];
+
+    rows.forEach(row => {
+        let name = row.querySelector('input[placeholder="Name"]').value.trim();
+        let email = row.querySelector('input[placeholder="Email"]').value.trim();
+        let phone = row.querySelector('input[placeholder="Phone"]').value.trim();
+        let role = row.querySelector('input[placeholder="Role"]').value.trim();
+
+        // Only add if at least one field is filled (optional logic)
+        if (name || email || phone || role) {
+            contactsData.push({ name, email, phone, role });
+        }
+    });
+
+    document.getElementById('contacts-json').value = JSON.stringify(contactsData);
+});
+</script>
+{% endblock %}
+

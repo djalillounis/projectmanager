@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Add New Item{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Add New Item to Project: {{ project.name }}</h2>
+    <form method="post" class="mb-3">
+        {% csrf_token %}
+        
+        <!-- Item Type -->
+        <div class="row mb-3">
+            <label for="id_item_type" class="col-sm-2 col-form-label">Item Type</label>
+            <div class="col-sm-10">
+                {{ form.item_type }}
+            </div>
+        </div>
+        
+        <!-- Short Description -->
+        <div class="row mb-3">
+            <label for="id_short_description" class="col-sm-2 col-form-label">Short Description</label>
+            <div class="col-sm-10">
+                {{ form.short_description }}
+            </div>
+        </div>
+        
+        <!-- Due Date (HTML5 date picker) -->
+        <div class="row mb-3">
+            <label for="id_due_date" class="col-sm-2 col-form-label">Due Date</label>
+            <div class="col-sm-10">
+                {{ form.due_date }}
+            </div>
+        </div>
+        
+        <!-- Status -->
+        <div class="row mb-3">
+            <label for="id_status" class="col-sm-2 col-form-label">Status</label>
+            <div class="col-sm-10">
+                {{ form.status }}
+            </div>
+        </div>
+        
+        <!-- Priority -->
+        <div class="row mb-3">
+            <label for="id_priority" class="col-sm-2 col-form-label">Priority</label>
+            <div class="col-sm-10">
+                {{ form.priority }}
+            </div>
+        </div>
+        
+        <!-- Owner -->
+        <div class="row mb-3">
+            <label for="id_owner" class="col-sm-2 col-form-label">Owner</label>
+            <div class="col-sm-10">
+                {{ form.owner }}
+            </div>
+        </div>
+        
+        <!-- Next Step Owner -->
+        <div class="row mb-3">
+            <label for="id_next_step_owner" class="col-sm-2 col-form-label">Next Step Owner</label>
+            <div class="col-sm-10">
+                {{ form.next_step_owner }}
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Create Item</button>
+        <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>
+{% endblock %}
+

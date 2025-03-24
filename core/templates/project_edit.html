@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Edit Project{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Edit Project: {{ project.name }}</h2>
+    
+    <form method="post" enctype="multipart/form-data" id="project-edit-form">
+        {% csrf_token %}
+        
+        <!-- Project Name -->
+        <div class="mb-3">
+            <label for="id_name" class="form-label">Name</label>
+            {{ form.name }}
+        </div>
+        
+        <!-- Project Description -->
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Description</label>
+            {{ form.description }}
+        </div>
+        
+        <!-- Project Logo -->
+        <div class="mb-3">
+            <label for="id_logo" class="form-label">Logo</label>
+            {{ form.logo }}
+        </div>
+        
+        <!-- Contacts Section -->
+        <div class="mb-3">
+            <label class="form-label">Contacts</label>
+            <div id="contacts-container" class="row g-3 mb-2"></div>
+            <button type="button" class="btn btn-secondary" id="add-contact-btn">+ Add Contact</button>
+            <!-- Hidden field to store contacts JSON -->
+            <input type="hidden" name="contacts_json" id="contacts-json">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Update Project</button>
+        <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>
+
+<!-- Pre-populate existing contacts using Django's json_script filter -->
+{{ project.contacts|json_script:"existingContacts" }}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Returns HTML for a single contact row with an optional contact object for pre-filling.
+function getContactRowHTML(index, contact = {}) {
+    let name = contact.name || '';
+    let email = contact.email || '';
+    let phone = contact.phone || '';
+    let role = contact.role || '';
+    return `
+    <div class="row mb-2 contact-row" data-index="${index}">
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Name" name="contact_name_${index}" value="${name}">
+        </div>
+        <div class="col-md-3">
+            <input type="email" class="form-control" placeholder="Email" name="contact_email_${index}" value="${email}">
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Phone" name="contact_phone_${index}" value="${phone}">
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Role" name="contact_role_${index}" value="${role}">
+        </div>
+        <div class="col-md-1 d-flex align-items-center">
+            <button type="button" class="btn btn-danger remove-contact-btn">&times;</button>
+        </div>
+    </div>
+    `;
+}
+
+let contactIndex = 0;
+const contactsContainer = document.getElementById('contacts-container');
+
+// Adds a contact row; if a contact object is provided, its values pre-fill the fields.
+function addContactRow(contact = {}) {
+    contactsContainer.insertAdjacentHTML('beforeend', getContactRowHTML(contactIndex, contact));
+    contactIndex++;
+}
+
+// Remove a contact row when its remove button is clicked.
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('remove-contact-btn')) {
+        e.target.closest('.contact-row').remove();
+    }
+});
+
+// Handler for the "Add Contact" button.
+document.getElementById('add-contact-btn').addEventListener('click', function() {
+    addContactRow();
+});
+
+// Before the form is submitted, gather all contact rows and save them as JSON in the hidden input.
+document.getElementById('project-edit-form').addEventListener('submit', function(e) {
+    const rows = contactsContainer.querySelectorAll('.contact-row');
+    let contactsData = [];
+    rows.forEach(row => {
+        let name = row.querySelector('input[placeholder="Name"]').value.trim();
+        let email = row.querySelector('input[placeholder="Email"]').value.trim();
+        let phone = row.querySelector('input[placeholder="Phone"]').value.trim();
+        let role = row.querySelector('input[placeholder="Role"]').value.trim();
+        // Include this row only if at least one field has content
+        if (name || email || phone || role) {
+            contactsData.push({ name, email, phone, role });
+        }
+    });
+    document.getElementById('contacts-json').value = JSON.stringify(contactsData);
+});
+
+// Pre-populate contact rows using the JSON data from the server.
+let existingContactsElement = document.getElementById('existingContacts');
+if (existingContactsElement) {
+    let existingContacts = JSON.parse(existingContactsElement.textContent);
+    existingContacts.forEach(function(contact) {
+        addContactRow(contact);
+    });
+}
+</script>
+{% endblock %}
+
