@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load formatting %}
 {% block title %}Project Details{% endblock %}
 
 {% block content %}
@@ -33,9 +34,13 @@
     </div>
   </div>
   
-  <!-- Items Tables -->
-  <!-- Table for Tasks -->
-  <h4>Tasks</h4>
+  <!-- Items Overview -->
+  
+  <!-- Tasks Table -->
+  <h4>
+    Tasks 
+    <a href="{% url 'item_create' project.id %}?item_type=task" class="btn btn-sm btn-secondary ms-2">+</a>
+  </h4>
   {% if tasks %}
   <table class="table table-hover">
     <thead>
@@ -45,21 +50,33 @@
         <th>Due Date</th>
         <th>Status</th>
         <th>Priority</th>
+        <th>Next Step Owner</th>
         <th>Last Update</th>
+        <th>Last Update Text</th>
       </tr>
     </thead>
     <tbody>
       {% for item in tasks %}
-      <tr onclick="location.href='{% url 'item_edit' item.id %}';" style="cursor: pointer;">
+      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
         <td>{{ item.short_description }}</td>
-        <td>{{ item.date_created|date:"M d, Y" }}</td>
-        <td>{{ item.due_date|date:"M d, Y" }}</td>
+        <td>{{ item.date_created|date:"d-m-Y H:i" }}</td>
+        <td>{{ item.due_date|date:"d-m-Y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
+        <td>{{ item.next_step_owner }}</td>
         <td>
           {% if item.updates and item.updates|length > 0 %}
             {% with last_update=item.updates|last %}
-              {{ last_update.timestamp }}
+              {{ last_update.timestamp|format_iso }}
+            {% endwith %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+        <td>
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last_update=item.updates|last %}
+              {{ last_update.comment }}
             {% endwith %}
           {% else %}
             -
@@ -73,8 +90,11 @@
     <p>No tasks available.</p>
   {% endif %}
   
-  <!-- Table for Sub-Projects -->
-  <h4 class="mt-4">Sub-Projects</h4>
+  <!-- Sub-Projects Table -->
+  <h4 class="mt-4">
+    Sub-Projects 
+    <a href="{% url 'item_create' project.id %}?item_type=sub_project" class="btn btn-sm btn-secondary ms-2">+</a>
+  </h4>
   {% if sub_projects %}
   <table class="table table-hover">
     <thead>
@@ -84,21 +104,33 @@
         <th>Due Date</th>
         <th>Status</th>
         <th>Priority</th>
+        <th>Next Step Owner</th>
         <th>Last Update</th>
+        <th>Last Update Text</th>
       </tr>
     </thead>
     <tbody>
       {% for item in sub_projects %}
-      <tr onclick="location.href='{% url 'item_edit' item.id %}';" style="cursor: pointer;">
+      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
         <td>{{ item.short_description }}</td>
-        <td>{{ item.date_created|date:"M d, Y" }}</td>
-        <td>{{ item.due_date|date:"M d, Y" }}</td>
+        <td>{{ item.date_created|date:"d-m-Y H:i" }}</td>
+        <td>{{ item.due_date|date:"d-m-Y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
+        <td>{{ item.next_step_owner }}</td>
         <td>
           {% if item.updates and item.updates|length > 0 %}
             {% with last_update=item.updates|last %}
-              {{ last_update.timestamp }}
+              {{ last_update.timestamp|format_iso }}
+            {% endwith %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+        <td>
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last_update=item.updates|last %}
+              {{ last_update.comment }}
             {% endwith %}
           {% else %}
             -
@@ -112,8 +144,11 @@
     <p>No sub-projects available.</p>
   {% endif %}
   
-  <!-- Table for Activities -->
-  <h4 class="mt-4">Activities</h4>
+  <!-- Activities Table -->
+  <h4 class="mt-4">
+    Activities 
+    <a href="{% url 'item_create' project.id %}?item_type=activity" class="btn btn-sm btn-secondary ms-2">+</a>
+  </h4>
   {% if activities %}
   <table class="table table-hover">
     <thead>
@@ -123,21 +158,33 @@
         <th>Due Date</th>
         <th>Status</th>
         <th>Priority</th>
+        <th>Next Step Owner</th>
         <th>Last Update</th>
+        <th>Last Update Text</th>
       </tr>
     </thead>
     <tbody>
       {% for item in activities %}
-      <tr onclick="location.href='{% url 'item_edit' item.id %}';" style="cursor: pointer;">
+      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
         <td>{{ item.short_description }}</td>
-        <td>{{ item.date_created|date:"M d, Y" }}</td>
-        <td>{{ item.due_date|date:"M d, Y" }}</td>
+        <td>{{ item.date_created|date:"d-m-Y H:i" }}</td>
+        <td>{{ item.due_date|date:"d-m-Y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
+        <td>{{ item.next_step_owner }}</td>
         <td>
           {% if item.updates and item.updates|length > 0 %}
             {% with last_update=item.updates|last %}
-              {{ last_update.timestamp }}
+              {{ last_update.timestamp|format_iso }}
+            {% endwith %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+        <td>
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last_update=item.updates|last %}
+              {{ last_update.comment }}
             {% endwith %}
           {% else %}
             -
