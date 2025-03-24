@@ -50,7 +50,7 @@
     </thead>
     <tbody>
       {% for item in tasks %}
-      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
+      <tr onclick="location.href='{% url 'item_edit' item.id %}';" style="cursor: pointer;">
         <td>{{ item.short_description }}</td>
         <td>{{ item.date_created|date:"M d, Y" }}</td>
         <td>{{ item.due_date|date:"M d, Y" }}</td>
@@ -89,7 +89,7 @@
     </thead>
     <tbody>
       {% for item in sub_projects %}
-      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
+      <tr onclick="location.href='{% url 'item_edit' item.id %}';" style="cursor: pointer;">
         <td>{{ item.short_description }}</td>
         <td>{{ item.date_created|date:"M d, Y" }}</td>
         <td>{{ item.due_date|date:"M d, Y" }}</td>
@@ -128,7 +128,7 @@
     </thead>
     <tbody>
       {% for item in activities %}
-      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
+      <tr onclick="location.href='{% url 'item_edit' item.id %}';" style="cursor: pointer;">
         <td>{{ item.short_description }}</td>
         <td>{{ item.date_created|date:"M d, Y" }}</td>
         <td>{{ item.due_date|date:"M d, Y" }}</td>
@@ -152,4 +152,3 @@
   {% endif %}
 </div>
 {% endblock %}
-
