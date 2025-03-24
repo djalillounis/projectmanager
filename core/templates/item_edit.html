@@ -4,11 +4,68 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Edit Item: {{ item.short_description }}</h2>
+    
+    <!-- Main Item Edit Form -->
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-primary">Update Item</button>
-        <a href="{% url 'project_detail' item.project.id %}" class="btn btn-secondary ms-2">Cancel</a>
+        <a href="{% url 'project_detail' item.project.id %}" class="btn btn-secondary ms-2">Back to Project</a>
     </form>
+    
+    <hr>
+    
+    <!-- Updates & Files Section -->
+    <h3>Updates & Files</h3>
+    
+    <!-- Form to add a new update with file upload -->
+    <form method="post" enctype="multipart/form-data" id="update-form" class="mb-4">
+        {% csrf_token %}
+        <!-- Hidden field to differentiate update form submission -->
+        <input type="hidden" name="update_form" value="1">
+        <div class="mb-3">
+            <label for="update_comment" class="form-label">Add Update (optional comment)</label>
+            <textarea name="update_comment" id="update_comment" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="update_file" class="form-label">Upload File</label>
+            <input type="file" name="update_file" id="update_file" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Add Update</button>
+    </form>
+    
+    <!-- Display Existing File Updates -->
+    <h4>Existing Files</h4>
+    {% if file_updates %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Comment</th>
+                <th>File</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for update in file_updates %}
+            <tr style="cursor: pointer;">
+                <td>{{ update.timestamp }}</td>
+                <td>{{ update.comment }}</td>
+                <td>
+                    <a href="{{ update.file }}" target="_blank">View File</a>
+                </td>
+                <td>
+                    <a href="{% url 'delete_update' item.id update.timestamp %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div>
+        <span>0</span>
+        <a href="#" class="btn btn-primary" onclick="document.getElementById('update_file').click(); return false;">+</a>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

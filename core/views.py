@@ -10,20 +10,56 @@ import json
 
 
 
-
 @login_required
 def item_edit(request, item_id):
     item = get_object_or_404(Item, id=item_id)
+    # Pre-filter updates that include a file
+    file_updates = [upd for upd in (item.updates or []) if upd.get('file')]
+    
     if request.method == 'POST':
-        form = ItemForm(request.POST, instance=item)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Item updated successfully!")
-            return redirect('project_detail', project_id=item.project.id)
+        # Check if this is the update form submission (for adding an update with file)
+        if 'update_form' in request.POST:
+            update_comment = request.POST.get('update_comment', '')
+            update_file = request.FILES.get('update_file')
+            new_update = {'timestamp': timezone.now().isoformat(), 'comment': update_comment}
+            if update_file:
+                # Save the file using Django's default storage
+                from django.core.files.storage import default_storage
+                from django.core.files.base import ContentFile
+                file_path = default_storage.save(f'updates/{update_file.name}', ContentFile(update_file.read()))
+                new_update['file'] = file_path
+            # Append the new update to the existing updates list
+            updates = item.updates if item.updates else []
+            updates.append(new_update)
+            item.updates = updates
+            item.save()
+            messages.success(request, "Update added successfully!")
+            return redirect('item_edit', item_id=item.id)
+        else:
+            # Process the main item edit form
+            form = ItemForm(request.POST, instance=item)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Item updated successfully!")
+                return redirect('project_detail', project_id=item.project.id)
     else:
         form = ItemForm(instance=item)
-    return render(request, 'item_edit.html', {'form': form, 'item': item})
+    context = {
+        'form': form,
+        'item': item,
+        'file_updates': file_updates,
+    }
+    return render(request, 'item_edit.html', context)
 
+@login_required
+def delete_update(request, item_id, timestamp):
+    item = get_object_or_404(Item, id=item_id)
+    if item.updates:
+        # Remove updates with matching timestamp
+        item.updates = [upd for upd in item.updates if upd.get('timestamp') != timestamp]
+        item.save()
+        messages.success(request, "Update deleted successfully!")
+    return redirect('item_edit', item_id=item_id)
 
 @login_required
 def project_edit(request, project_id):
