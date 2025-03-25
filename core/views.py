@@ -11,55 +11,43 @@ import json
 from .forms import ProjectForm, ItemForm
 from .models import Project, Item
 
+
 @login_required
 def item_edit(request, item_id):
-    """
-    Edit an existing item. Includes the ability to add updates/files,
-    and to edit main item fields.
-    """
     item = get_object_or_404(Item, id=item_id)
-    # Filter out updates that have a file for display
-    file_updates = [upd for upd in (item.updates or []) if upd.get('file')]
-    
     if request.method == 'POST':
-        # Check if this is the update form submission (for adding an update/file)
-        if 'update_form' in request.POST:
+        form = ItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            # Check if an update comment or file is provided
             update_comment = request.POST.get('update_comment', '')
             update_file = request.FILES.get('update_file')
-            new_update = {
-                'timestamp': timezone.now().isoformat(),
-                'comment': update_comment
-            }
-            if update_file:
-                from django.core.files.storage import default_storage
-                from django.core.files.base import ContentFile
-                file_path = default_storage.save(
-                    f'updates/{update_file.name}',
-                    ContentFile(update_file.read())
-                )
-                new_update['file'] = file_path
-            updates = item.updates if item.updates else []
-            updates.append(new_update)
-            item.updates = updates
-            item.save()
-            messages.success(request, "Update added successfully!")
-            return redirect('item_edit', item_id=item.id)
-        else:
-            # Process the main item form
-            form = ItemForm(request.POST, instance=item)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Item updated successfully!")
-                return redirect('project_detail', project_id=item.project.id)
+            if update_comment or update_file:
+                new_update = {'timestamp': timezone.now().isoformat(), 'comment': update_comment}
+                if update_file:
+                    from django.core.files.storage import default_storage
+                    from django.core.files.base import ContentFile
+                    file_path = default_storage.save(f'updates/{update_file.name}', ContentFile(update_file.read()))
+                    new_update['file'] = file_path
+                updates = item.updates if item.updates else []
+                updates.append(new_update)
+                item.updates = updates
+                item.save()
+            messages.success(request, "Item updated successfully!")
+            return redirect('project_detail', project_id=item.project.id)
     else:
         form = ItemForm(instance=item)
     
     context = {
         'form': form,
         'item': item,
-        'file_updates': file_updates,
     }
     return render(request, 'item_edit.html', context)
+
+
+
+
+
 
 @login_required
 def delete_update(request, item_id, timestamp):
