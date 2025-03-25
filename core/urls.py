@@ -14,4 +14,9 @@ urlpatterns = [
     path('items/<int:item_id>/updates/delete/<str:timestamp>/', views.delete_update, name='delete_update'),
     path('api/item/<int:item_id>/update_next_step/', views.update_next_step, name='update_next_step'),
     path('items/<int:item_id>/delete_file/<str:timestamp>/', views.delete_item_file, name='delete_item_file'),
+
+    # ✅ New AJAX endpoints
+    path('projects/<int:project_id>/contacts/add/', views.add_contact, name='add_contact'),
+    path('contacts/<int:contact_id>/delete/', views.delete_contact, name='delete_contact'),
+    path('projects/<int:project_id>/update_info/', views.update_project_info, name='update_project_info'),
 ]

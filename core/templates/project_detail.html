@@ -4,267 +4,177 @@
 
 {% block content %}
 <div class="container mt-4">
-  <!-- Header: Project Name and Action Buttons -->
+  <!-- Project Title + Actions -->
   <div class="d-flex justify-content-between align-items-center">
-      <h1>{{ project.name }}</h1>
-      <div>
-          <a href="{% url 'project_edit' project.id %}" class="btn btn-warning me-2">Edit Project</a>
-          <a href="{% url 'project_delete' project.id %}" class="btn btn-danger me-2">Delete Project</a>
-          <a href="{% url 'project_list' %}" class="btn btn-secondary me-2">Back to Projects</a>
-          <!-- Export Button Placeholder -->
-          <button class="btn btn-info" onclick="alert('Export feature coming soon!')">Export</button>
-      </div>
-  </div>
-  <p>{{ project.description }}</p>
-  
-  <!-- Contacts Section -->
-  <h4>Contacts</h4>
-  <div style="max-width: 100%; overflow-x: auto; padding: 10px; border: 1px solid #ddd; margin-bottom: 20px;">
-    <div style="display: flex; gap: 20px;">
-      {% if project.contacts %}
-        {% for contact in project.contacts %}
-          <div style="min-width: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
-              <strong>{{ contact.name }}</strong><br>
-              Email: {{ contact.email }}<br>
-              Phone: {{ contact.phone }}<br>
-              Role: {{ contact.role }}
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No contacts.</p>
-      {% endif %}
+    <h1 id="project-title">{{ project.name }}</h1>
+    <div>
+      <a href="{% url 'project_edit' project.id %}" class="btn btn-warning me-2">Edit Project</a>
+      <a href="{% url 'project_delete' project.id %}" class="btn btn-danger me-2">Delete Project</a>
+      <a href="{% url 'project_list' %}" class="btn btn-secondary me-2">Back to Projects</a>
+      <button class="btn btn-info" onclick="alert('Export feature coming soon!')">Export</button>
     </div>
   </div>
 
-  <!-- Tasks Table -->
-  <h4>
-    Tasks 
-    <a href="{% url 'item_create' project.id %}?item_type=task" class="btn btn-sm btn-secondary ms-2">+</a>
-  </h4>
-  {% if tasks %}
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Description</th>
-        <th>Created Date</th>
-        <th>Due Date</th>
-        <th><a href="?sort=status">Status</a></th>
-        <th><a href="?sort=priority">Priority</a></th>
-        <th>Owner</th>
-        <th>Next Step Owner</th>
-        <th>Last Update</th>
-        <th>Last Update Text</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in tasks %}
-      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
-        <td>{{ item.short_description }}</td>
-        <td>{{ item.date_created|format_iso }}</td>
-        <td>{{ item.due_date|date:"d-M-y" }}</td>
-        <td>{{ item.status }}</td>
-        <td>{{ item.priority }}</td>
-        <td>{{ item.owner|default:"-" }}</td>
-        <td>
-          <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
-          <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
-        </td>
-        <td>
-          {% if item.updates and item.updates|length > 0 %}
-            {% with last_update=item.updates|last %}
-              {{ last_update.timestamp|format_iso }}
-            {% endwith %}
-          {% else %}
-            -
-          {% endif %}
-        </td>
-        <td>
-          {% if item.updates and item.updates|length > 0 %}
-            {% with last_update=item.updates|last %}
-              {{ last_update.comment }}
-            {% endwith %}
-          {% else %}
-            -
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-    <p>No tasks available.</p>
-  {% endif %}
+  <!-- Nav Tabs -->
+  <ul class="nav nav-tabs mt-4" id="projectTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button" role="tab">Tasks</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="adoption-tab" data-bs-toggle="tab" data-bs-target="#adoption" type="button" role="tab">Adoption</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="contacts-tab" data-bs-toggle="tab" data-bs-target="#contacts" type="button" role="tab">Contacts</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#project-info" type="button" role="tab">Project Info</button>
+    </li>
+  </ul>
 
-  <!-- Sub-Projects Table -->
-  <h4 class="mt-4">
-    Sub-Projects 
-    <a href="{% url 'item_create' project.id %}?item_type=sub_project" class="btn btn-sm btn-secondary ms-2">+</a>
-  </h4>
-  {% if sub_projects %}
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Description</th>
-        <th>Created Date</th>
-        <th>Due Date</th>
-        <th><a href="?sort=status">Status</a></th>
-        <th><a href="?sort=priority">Priority</a></th>
-        <th>Owner</th>
-        <th>Next Step Owner</th>
-        <th>Last Update</th>
-        <th>Last Update Text</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in sub_projects %}
-      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
-        <td>{{ item.short_description }}</td>
-        <td>{{ item.date_created|format_iso }}</td>
-        <td>{{ item.due_date|date:"d-M-y" }}</td>
-        <td>{{ item.status }}</td>
-        <td>{{ item.priority }}</td>
-        <td>{{ item.owner|default:"-" }}</td>
-        <td>
-          <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
-          <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
-        </td>
-        <td>
-          {% if item.updates and item.updates|length > 0 %}
-            {% with last_update=item.updates|last %}
-              {{ last_update.timestamp|format_iso }}
-            {% endwith %}
-          {% else %}
-            -
-          {% endif %}
-        </td>
-        <td>
-          {% if item.updates and item.updates|length > 0 %}
-            {% with last_update=item.updates|last %}
-              {{ last_update.comment }}
-            {% endwith %}
-          {% else %}
-            -
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-    <p>No sub-projects available.</p>
-  {% endif %}
+  <div class="tab-content p-3 border border-top-0" id="projectTabContent">
+    <!-- Tasks Tab -->
+    <div class="tab-pane fade show active" id="tasks" role="tabpanel">
+      <h4>Tasks <a href="{% url 'item_create' project.id %}?item_type=task" class="btn btn-sm btn-secondary ms-2">+</a></h4>
+      {% include 'partials/item_table.html' with items=tasks %}
+      <h4 class="mt-4">Sub-Projects <a href="{% url 'item_create' project.id %}?item_type=sub_project" class="btn btn-sm btn-secondary ms-2">+</a></h4>
+      {% include 'partials/item_table.html' with items=sub_projects %}
+      <h4 class="mt-4">Activities <a href="{% url 'item_create' project.id %}?item_type=activity" class="btn btn-sm btn-secondary ms-2">+</a></h4>
+      {% include 'partials/item_table.html' with items=activities %}
+    </div>
 
-  <!-- Activities Table -->
-  <h4 class="mt-4">
-    Activities 
-    <a href="{% url 'item_create' project.id %}?item_type=activity" class="btn btn-sm btn-secondary ms-2">+</a>
-  </h4>
-  {% if activities %}
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Description</th>
-        <th>Created Date</th>
-        <th>Due Date</th>
-        <th><a href="?sort=status">Status</a></th>
-        <th><a href="?sort=priority">Priority</a></th>
-        <th>Owner</th>
-        <th>Next Step Owner</th>
-        <th>Last Update</th>
-        <th>Last Update Text</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in activities %}
-      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
-        <td>{{ item.short_description }}</td>
-        <td>{{ item.date_created|format_iso }}</td>
-        <td>{{ item.due_date|date:"d-M-y" }}</td>
-        <td>{{ item.status }}</td>
-        <td>{{ item.priority }}</td>
-        <td>{{ item.owner|default:"-" }}</td>
-        <td>
-          <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
-          <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
-        </td>
-        <td>
-          {% if item.updates and item.updates|length > 0 %}
-            {% with last_update=item.updates|last %}
-              {{ last_update.timestamp|format_iso }}
-            {% endwith %}
-          {% else %}
-            -
-          {% endif %}
-        </td>
-        <td>
-          {% if item.updates and item.updates|length > 0 %}
-            {% with last_update=item.updates|last %}
-              {{ last_update.comment }}
-            {% endwith %}
-          {% else %}
-            -
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-    <p>No activities available.</p>
-  {% endif %}
+    <!-- Adoption Tab -->
+    <div class="tab-pane fade" id="adoption" role="tabpanel">
+      <p class="text-muted">This feature is coming soon.</p>
+    </div>
+
+    <!-- Contacts Tab -->
+    <div class="tab-pane fade" id="contacts" role="tabpanel">
+      <h4 class="mb-3">Project Contacts</h4>
+      <div id="contacts-container" class="row">
+        {% for contact in contacts %}
+        <div class="col-md-4 mb-3" id="contact-{{ contact.id }}">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{ contact.name }}</h5>
+              <p class="card-text">
+                <strong>Type:</strong> {{ contact.contact_type|title }}<br>
+                <strong>Role:</strong> {{ contact.role }}<br>
+                <strong>Email:</strong> {{ contact.email }}<br>
+                <strong>Phone:</strong> {{ contact.phone }}
+              </p>
+              <button class="btn btn-sm btn-danger" onclick="deleteContact({{ contact.id }})">Delete</button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <hr>
+      <h5>Add New Contact</h5>
+      <form id="contact-form">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-4">
+            <input type="text" name="name" placeholder="Name" class="form-control mb-2" required>
+            <input type="email" name="email" placeholder="Email" class="form-control mb-2">
+            <input type="text" name="phone" placeholder="Phone" class="form-control mb-2">
+          </div>
+          <div class="col-md-4">
+            <input type="text" name="role" placeholder="Role" class="form-control mb-2">
+            <select name="contact_type" class="form-control mb-2">
+              <option value="internal">Internal</option>
+              <option value="external" selected>External</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Add Contact</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Project Info Tab -->
+    <div class="tab-pane fade" id="project-info" role="tabpanel">
+      <h4>Edit Project Info</h4>
+      <form id="project-info-form">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="project-name" class="form-label">Project Name</label>
+          <input type="text" id="project-name" name="name" class="form-control" value="{{ project.name }}">
+        </div>
+        <div class="mb-3">
+          <label for="project-description" class="form-label">Description</label>
+          <textarea id="project-description" name="description" class="form-control">{{ project.description }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Save Changes</button>
+      </form>
+    </div>
+  </div>
 </div>
 
-<!-- Inline Editing Script -->
+<!-- JavaScript -->
 <script>
-function editNextStep(itemId) {
-  var span = document.querySelector('.editable-next-step[data-item-id="'+itemId+'"]');
-  if (!span) return;
-  var currentValue = span.innerText.trim();
-  var input = document.createElement('input');
-  input.type = 'text';
-  input.value = currentValue;
-  input.className = 'form-control';
-  input.style.width = '150px';
-  span.parentNode.replaceChild(input, span);
-  input.focus();
+function deleteContact(contactId) {
+  if (!confirm("Are you sure you want to delete this contact?")) return;
 
-  input.addEventListener('blur', function() {
-    saveNextStep(itemId, input.value, input);
-  });
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      input.blur();
+  fetch("{% url 'delete_contact' 0 %}".replace("0", contactId), {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCookie("csrftoken")
+    }
+  }).then(res => res.json()).then(data => {
+    if (data.success) {
+      document.getElementById(`contact-${contactId}`).remove();
     }
   });
 }
 
-function saveNextStep(itemId, newValue, inputElem) {
-  fetch('/api/item/' + itemId + '/update_next_step/', {
-    method: 'POST',
+document.getElementById("contact-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+
+  fetch("{% url 'add_contact' project.id %}", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie('csrftoken'),
+      "X-CSRFToken": getCookie("csrftoken")
     },
-    body: JSON.stringify({ next_step_owner: newValue })
-  })
-  .then(response => response.json())
-  .then(data => {
-    const span = document.createElement('span');
-    span.className = 'editable-next-step';
-    span.setAttribute('data-item-id', itemId);
-    span.innerText = newValue || '-';
-    inputElem.parentNode.replaceChild(span, inputElem);
+    body: formData
+  }).then(res => res.json()).then(data => {
+    if (data.success) {
+      location.reload();
+    } else {
+      alert("Error: " + JSON.stringify(data.errors));
+    }
   });
-}
+});
+
+document.getElementById("project-info-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const data = {
+    name: document.getElementById("project-name").value,
+    description: document.getElementById("project-description").value
+  };
+
+  fetch("{% url 'update_project_info' project.id %}", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken")
+    },
+    body: JSON.stringify(data)
+  }).then(res => res.json()).then(data => {
+    if (data.success) {
+      document.getElementById("project-title").textContent = data.name || data.description;
+      alert("Project updated.");
+    }
+  });
+});
 
 function getCookie(name) {
   let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+      if (cookie.substring(0, name.length + 1) === name + "=") {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;
       }

@@ -1,10 +1,12 @@
 from django import forms
-from .models import Project, Item 
+from .models import Project, Item, Contact
+
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ['name', 'description', 'logo']
+
 
 class ItemForm(forms.ModelForm):
     class Meta:
@@ -13,3 +15,9 @@ class ItemForm(forms.ModelForm):
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'})
         }
+
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = ['name', 'email', 'phone', 'role', 'contact_type']
