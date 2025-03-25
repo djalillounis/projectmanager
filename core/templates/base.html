@@ -6,7 +6,8 @@
     <title>{% block title %}Project Manager{% endblock %}</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <!-- Font Awesome CSS (for icons, e.g., pencil icon) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Custom Styles -->
     <style>
         /* Primary colors: Purple & White */
@@ -20,9 +21,9 @@
             background-color: #121212;
             color: #e0e0e0;
         }
-        /* Table hover to purple background */
+        /* Table hover: rows turn purple on hover */
         .table-hover tbody tr:hover {
-            background-color: #6c2dc7; /* or any purple shade you prefer */
+            background-color: #6c2dc7;
             color: #fff;
         }
     </style>
@@ -32,10 +33,9 @@
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
-        <!-- Clicking the brand or the Home link leads to the dashboard -->
         <a class="navbar-brand" href="{% url 'dashboard' %}">Project Manager</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -44,12 +44,8 @@
               <a class="nav-link" href="{% url 'dashboard' %}">Home</a>
             </li>
             {% if user.is_authenticated %}
-            <!-- Night Mode Icon -->
             <li class="nav-item">
-              <a class="nav-link" href="#" id="toggleNightMode" title="Toggle Night Mode">
-                <!-- Use a simple emoji or any icon library you prefer -->
-                🌓
-              </a>
+              <a class="nav-link" href="#" id="toggleNightMode" title="Toggle Night Mode">🌓</a>
             </li>
             <li class="nav-item">
               <span class="nav-link">Welcome, {{ user.username }}!</span>
@@ -67,7 +63,7 @@
       </div>
     </nav>
     
-    <!-- Display Django Messages -->
+    <!-- Django Messages -->
     {% if messages %}
       <div class="container mt-2">
         {% for message in messages %}
@@ -81,14 +77,12 @@
     
     <!-- Main Content -->
     <div class="container mt-4">
-      {% block content %}
-      {% endblock %}
+      {% block content %}{% endblock %}
     </div>
     
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Night Mode Toggle Script
       document.getElementById('toggleNightMode')?.addEventListener('click', function() {
           document.body.classList.toggle('night-mode');
       });
@@ -96,4 +90,3 @@
     {% block extra_js %}{% endblock %}
 </body>
 </html>
-
