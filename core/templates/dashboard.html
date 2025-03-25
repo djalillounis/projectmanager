@@ -36,23 +36,11 @@
 <!-- Project List -->
 <h4 class="mb-3">Projects</h4>
 {% if projects %}
-<div class="row">
-    {% for project in projects %}
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title text-primary">{{ project.name }}</h5>
-                <p class="card-text">{{ project.description|truncatewords:20 }}</p>
-                <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary w-100 mt-3">View Project</a>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
+    {% include "partials/_project_cards.html" %}
 {% else %}
-<div class="alert alert-info">
-    No projects available.
-</div>
+    <div class="alert alert-info">
+        No projects available.
+    </div>
 {% endif %}
 
 {% endblock %}
