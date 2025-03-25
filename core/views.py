@@ -105,6 +105,12 @@ def update_next_step(request, item_id):
     return JsonResponse({'success': True})
 
 
+@login_required
+def custom_logout(request):
+    logout(request)
+    return redirect('login')
+
+
 # ✅ NEW VIEWS BELOW
 
 @login_required
