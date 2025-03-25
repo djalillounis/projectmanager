@@ -5,82 +5,111 @@
 {% block content %}
 <div class="container mt-5">
   <h2>Edit Item: {{ item.short_description }}</h2>
+  
   <form method="post" enctype="multipart/form-data" id="item-edit-form">
     {% csrf_token %}
-    <div class="row">
+    
+    <!-- Row for alignment -->
+    <div class="row g-3">
+      
       <!-- Left Column: Main Item Edit Form -->
       <div class="col-md-6">
-          <h4>Item Details</h4>
-          <div class="mb-3">
-              <label for="id_item_type" class="form-label">Item Type</label>
-              {{ form.item_type }}
-          </div>
-          <div class="mb-3">
-              <label for="id_short_description" class="form-label">Short Description</label>
-              {{ form.short_description }}
-          </div>
-          <div class="mb-3">
-              <label for="id_due_date" class="form-label">Due Date</label>
-              {{ form.due_date }}
-          </div>
-          <div class="mb-3">
-              <label for="id_status" class="form-label">Status</label>
-              {{ form.status }}
-          </div>
-          <div class="mb-3">
-              <label for="id_priority" class="form-label">Priority</label>
-              {{ form.priority }}
-          </div>
-          <div class="mb-3">
-              <label for="id_owner" class="form-label">Owner</label>
-              {{ form.owner }}
-          </div>
-          <div class="mb-3">
-              <label for="id_next_step_owner" class="form-label">Next Step Owner</label>
-              {{ form.next_step_owner }}
-          </div>
+        <h4>Item Details</h4>
+        
+        <!-- Item Type -->
+        <div class="mb-3">
+          <label for="id_item_type" class="form-label">Item Type</label>
+          {{ form.item_type }}
+        </div>
+        
+        <!-- Short Description -->
+        <div class="mb-3">
+          <label for="id_short_description" class="form-label">Short Description</label>
+          {{ form.short_description }}
+        </div>
+        
+        <!-- Due Date -->
+        <div class="mb-3">
+          <label for="id_due_date" class="form-label">Due Date</label>
+          {{ form.due_date }}
+        </div>
+        
+        <!-- Status -->
+        <div class="mb-3">
+          <label for="id_status" class="form-label">Status</label>
+          {{ form.status }}
+        </div>
+        
+        <!-- Priority -->
+        <div class="mb-3">
+          <label for="id_priority" class="form-label">Priority</label>
+          {{ form.priority }}
+        </div>
+        
+        <!-- Owner -->
+        <div class="mb-3">
+          <label for="id_owner" class="form-label">Owner</label>
+          {{ form.owner }}
+        </div>
+        
+        <!-- Next Step Owner -->
+        <div class="mb-3">
+          <label for="id_next_step_owner" class="form-label">Next Step Owner</label>
+          {{ form.next_step_owner }}
+        </div>
       </div>
       
-      <!-- Right Column: Update and File Upload Section -->
+      <!-- Right Column: Update & File Upload Section -->
       <div class="col-md-6">
-          <h4>Add Update / Upload File</h4>
-          <div class="mb-3">
-              <label for="update_comment" class="form-label">Update Comment</label>
-              <textarea name="update_comment" id="update_comment" class="form-control" rows="3"></textarea>
-          </div>
-          <div class="mb-3">
-              <label for="update_file" class="form-label">Upload File</label>
-              <input type="file" name="update_file" id="update_file" class="form-control">
-          </div>
-          <h5>Existing Updates & Files</h5>
-          {% if item.updates and item.updates|length > 0 %}
+        <h4>Add Update / Upload File</h4>
+        
+        <!-- Update Comment -->
+        <div class="mb-3">
+          <label for="update_comment" class="form-label">Update Comment</label>
+          <textarea name="update_comment" id="update_comment" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <!-- File Upload -->
+        <div class="mb-3">
+          <label for="update_file" class="form-label">Upload File</label>
+          <input type="file" name="update_file" id="update_file" class="form-control">
+        </div>
+        
+        <!-- Existing Updates Table -->
+        <h5>Existing Updates & Files</h5>
+        {% if item.updates and item.updates|length > 0 %}
           <table class="table table-hover">
-              <thead>
-                  <tr>
-                      <th>Timestamp</th>
-                      <th>Comment</th>
-                      <th>File</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {% for update in item.updates %}
-                  <tr>
-                      <td>{{ update.timestamp|format_iso }}</td>
-                      <td>{{ update.comment }}</td>
-                      <td>
-                          {% if update.file %}
-                            <a href="{{ update.file }}" target="_blank">View File</a>
-                          {% else %}
-                            -
-                          {% endif %}
-                      </td>
-                  </tr>
-                  {% endfor %}
-              </tbody>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Comment</th>
+                <th>File</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for update in item.updates %}
+              <tr>
+                <td>{{ update.timestamp|format_iso }}</td>
+                <td>{{ update.comment }}</td>
+                <td>
+                  {% if update.file %}
+                    <a href="{{ update.file }}" target="_blank">View File</a>
+                    <!-- Link to delete the file from this update -->
+                    <a href="{% url 'delete_item_file' item.id update.timestamp %}"
+                       class="btn btn-danger btn-sm ms-2">
+                      Delete File
+                    </a>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
           </table>
-          {% else %}
+        {% else %}
           <p>No updates available.</p>
-          {% endif %}
+        {% endif %}
       </div>
     </div>
     
