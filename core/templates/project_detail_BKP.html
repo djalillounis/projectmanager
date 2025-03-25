@@ -17,7 +17,7 @@
   </div>
   <p>{{ project.description }}</p>
   
-  <!-- Contacts Section -->
+  <!-- Contacts Section (displayed horizontally) -->
   <h4>Contacts</h4>
   <div style="max-width: 100%; overflow-x: auto; padding: 10px; border: 1px solid #ddd; margin-bottom: 20px;">
     <div style="display: flex; gap: 20px;">
@@ -35,7 +35,7 @@
       {% endif %}
     </div>
   </div>
-
+  
   <!-- Tasks Table -->
   <h4>
     Tasks 
@@ -50,7 +50,6 @@
         <th>Due Date</th>
         <th><a href="?sort=status">Status</a></th>
         <th><a href="?sort=priority">Priority</a></th>
-        <th>Owner</th>
         <th>Next Step Owner</th>
         <th>Last Update</th>
         <th>Last Update Text</th>
@@ -64,7 +63,6 @@
         <td>{{ item.due_date|date:"d-M-y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
-        <td>{{ item.owner|default:"-" }}</td>
         <td>
           <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
           <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
@@ -94,7 +92,7 @@
   {% else %}
     <p>No tasks available.</p>
   {% endif %}
-
+  
   <!-- Sub-Projects Table -->
   <h4 class="mt-4">
     Sub-Projects 
@@ -109,7 +107,6 @@
         <th>Due Date</th>
         <th><a href="?sort=status">Status</a></th>
         <th><a href="?sort=priority">Priority</a></th>
-        <th>Owner</th>
         <th>Next Step Owner</th>
         <th>Last Update</th>
         <th>Last Update Text</th>
@@ -123,7 +120,6 @@
         <td>{{ item.due_date|date:"d-M-y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
-        <td>{{ item.owner|default:"-" }}</td>
         <td>
           <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
           <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
@@ -153,7 +149,7 @@
   {% else %}
     <p>No sub-projects available.</p>
   {% endif %}
-
+  
   <!-- Activities Table -->
   <h4 class="mt-4">
     Activities 
@@ -168,7 +164,6 @@
         <th>Due Date</th>
         <th><a href="?sort=status">Status</a></th>
         <th><a href="?sort=priority">Priority</a></th>
-        <th>Owner</th>
         <th>Next Step Owner</th>
         <th>Last Update</th>
         <th>Last Update Text</th>
@@ -182,7 +177,6 @@
         <td>{{ item.due_date|date:"d-M-y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
-        <td>{{ item.owner|default:"-" }}</td>
         <td>
           <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
           <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
@@ -214,11 +208,11 @@
   {% endif %}
 </div>
 
-<!-- Inline Editing Script -->
+<!-- Inline Editing JS for Next Step Owner -->
 <script>
 function editNextStep(itemId) {
   var span = document.querySelector('.editable-next-step[data-item-id="'+itemId+'"]');
-  if (!span) return;
+  if (!span) { return; }
   var currentValue = span.innerText.trim();
   var input = document.createElement('input');
   input.type = 'text';
@@ -244,33 +238,4 @@ function saveNextStep(itemId, newValue, inputElem) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie('csrftoken'),
-    },
-    body: JSON.stringify({ next_step_owner: newValue })
-  })
-  .then(response => response.json())
-  .then(data => {
-    const span = document.createElement('span');
-    span.className = 'editable-next-step';
-    span.setAttribute('data-item-id', itemId);
-    span.innerText = newValue || '-';
-    inputElem.parentNode.replaceChild(span, inputElem);
-  });
-}
-
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-}
-</script>
-{% endblock %}
+      'X-CSRFToken': getCookie
