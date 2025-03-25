@@ -120,6 +120,28 @@ def project_edit(request, project_id):
     return render(request, 'project_edit.html', {'form': form, 'project': project})
 
 @login_required
+def project_create(request):
+    """
+    Create a new project, including contacts JSON.
+    """
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES)
+        if form.is_valid():
+            project = form.save(commit=False)
+            contacts_data = request.POST.get('contacts_json', '[]')
+            try:
+                contacts_list = json.loads(contacts_data)
+            except json.JSONDecodeError:
+                contacts_list = []
+            project.contacts = contacts_list
+            project.save()
+            messages.success(request, "Project created successfully!")
+            return redirect('dashboard')
+    else:
+        form = ProjectForm()
+    return render(request, 'project_create.html', {'form': form})
+
+@login_required
 def item_create(request, project_id):
     """
     Create a new item under a given project.
@@ -219,7 +241,6 @@ def dashboard(request):
     """
     Dashboard showing global item counts and a summary of each project's open items.
     """
-    from datetime import date
     open_items_count = Item.objects.filter(status__in=['new', 'in_progress', 'on_hold']).count()
     high_priority_count = Item.objects.filter(priority='high', status__in=['new','in_progress','on_hold']).count()
     overdue_count = Item.objects.filter(due_date__lt=date.today(), status__in=['new','in_progress','on_hold']).count()
