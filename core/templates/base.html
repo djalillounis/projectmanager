@@ -19,8 +19,20 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container">
         <a class="navbar-brand" href="{% url 'dashboard' %}">Project Manager</a>
-        <div class="ms-auto">
-            <a class="btn btn-outline-light" href="{% url 'logout' %}">Logout</a>
+
+        <!-- Right-side menu -->
+        <div class="dropdown ms-auto">
+            <button class="btn btn-outline-light dropdown-toggle btn-sm" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                ☰ Menu
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                <li><a class="dropdown-item" href="{% url 'project_create' %}">+ Create Project</a></li>
+                <li><a class="dropdown-item text-muted" href="#">⚙️ Settings (coming soon)</a></li>
+                <li><a class="dropdown-item text-muted" href="#">👤 Profile (coming soon)</a></li>
+                <li><a class="dropdown-item" href="#" id="nightModeToggle">🌓 Night Mode</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
         </div>
     </div>
 </nav>
@@ -43,6 +55,14 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-{% block extra_js %}{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Night mode toggle
+    document.getElementById('nightModeToggle').addEventListener('click', function () {
+        document.body.classList.toggle('night-mode');
+    });
+</script>
+{% endblock %}
 </body>
 </html>
