@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container mt-4">
-  <!-- Header with Project Name and Action Buttons -->
+  <!-- Header: Project Name and Action Buttons -->
   <div class="d-flex justify-content-between align-items-center">
       <h1>{{ project.name }}</h1>
       <div>
@@ -34,8 +34,6 @@
     </div>
   </div>
   
-  <!-- Items Overview -->
-  
   <!-- Tasks Table -->
   <h4>
     Tasks 
@@ -48,10 +46,13 @@
         <th>Description</th>
         <th>Created Date</th>
         <th>Due Date</th>
-        <th>Status</th>
-        <th>Priority</th>
-        <th>Next Step Owner</th>
-        <th>Last Update</th>
+        <th><a href="?sort=status">Status</a></th>
+        <th><a href="?sort=priority">Priority</a></th>
+        <th>Next Step</th>
+        <th>
+          Last Update<br>
+          <small>(dd-mm-yyyy hh:mm)</small>
+        </th>
         <th>Last Update Text</th>
       </tr>
     </thead>
@@ -63,7 +64,10 @@
         <td>{{ item.due_date|date:"d-m-Y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
-        <td>{{ item.next_step_owner }}</td>
+        <td>
+          <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
+          <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
+        </td>
         <td>
           {% if item.updates and item.updates|length > 0 %}
             {% with last_update=item.updates|last %}
@@ -102,10 +106,13 @@
         <th>Description</th>
         <th>Created Date</th>
         <th>Due Date</th>
-        <th>Status</th>
-        <th>Priority</th>
-        <th>Next Step Owner</th>
-        <th>Last Update</th>
+        <th><a href="?sort=status">Status</a></th>
+        <th><a href="?sort=priority">Priority</a></th>
+        <th>Next Step</th>
+        <th>
+          Last Update<br>
+          <small>(dd-mm-yyyy hh:mm)</small>
+        </th>
         <th>Last Update Text</th>
       </tr>
     </thead>
@@ -117,7 +124,10 @@
         <td>{{ item.due_date|date:"d-m-Y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
-        <td>{{ item.next_step_owner }}</td>
+        <td>
+          <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
+          <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
+        </td>
         <td>
           {% if item.updates and item.updates|length > 0 %}
             {% with last_update=item.updates|last %}
@@ -156,10 +166,13 @@
         <th>Description</th>
         <th>Created Date</th>
         <th>Due Date</th>
-        <th>Status</th>
-        <th>Priority</th>
-        <th>Next Step Owner</th>
-        <th>Last Update</th>
+        <th><a href="?sort=status">Status</a></th>
+        <th><a href="?sort=priority">Priority</a></th>
+        <th>Next Step</th>
+        <th>
+          Last Update<br>
+          <small>(dd-mm-yyyy hh:mm)</small>
+        </th>
         <th>Last Update Text</th>
       </tr>
     </thead>
@@ -171,7 +184,10 @@
         <td>{{ item.due_date|date:"d-m-Y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
-        <td>{{ item.next_step_owner }}</td>
+        <td>
+          <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
+          <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
+        </td>
         <td>
           {% if item.updates and item.updates|length > 0 %}
             {% with last_update=item.updates|last %}
@@ -198,4 +214,78 @@
     <p>No activities available.</p>
   {% endif %}
 </div>
-{% endblock %}
+
+<!-- Inline Editing JS for Next Step -->
+<script>
+function editNextStep(itemId) {
+  var span = document.querySelector('.editable-next-step[data-item-id="'+itemId+'"]');
+  if (!span) return;
+  var currentValue = span.innerText.trim();
+  var input = document.createElement('input');
+  input.type = 'text';
+  input.value = currentValue;
+  input.className = 'form-control';
+  input.style.width = '150px';
+  span.parentNode.replaceChild(input, span);
+  input.focus();
+  input.addEventListener('blur', function() {
+    saveNextStep(itemId, input.value, input);
+  });
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      input.blur();
+    }
+  });
+}
+
+function saveNextStep(itemId, newValue, inputElem) {
+  fetch('/api/item/' + itemId + '/update_next_step/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({ next_step: newValue })
+  })
+  .then(response => response.json())
+  .then(data => {
+    var span = document.createElement('span');
+    span.className = 'editable-next-step';
+    span.setAttribute('data-item-id', itemId);
+    span.innerText = data.next_step || newValue;
+    inputElem.parentNode.replaceChild(span, inputElem);
+    var icon = document.createElement('i');
+    icon.className = 'fa fa-pencil edit-icon';
+    icon.style.cursor = 'pointer';
+    icon.onclick = function(e) {
+      e.stopPropagation();
+      editNextStep(itemId);
+    };
+    span.parentNode.appendChild(icon);
+  })
+  .catch(error => {
+    console.error('Error updating Next Step:', error);
+    var span = document.createElement('span');
+    span.className = 'editable-next-step';
+    span.setAttribute('data-item-id', itemId);
+    span.innerText = newValue;
+    inputElem.parentNode.replaceChild(span, inputElem);
+  });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
