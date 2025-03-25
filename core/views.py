@@ -14,9 +14,98 @@ from .models import Project, Item, Contact
 
 @login_required
 def dashboard(request):
-    # Your original dashboard view logic here...
-    pass
+    projects = Project.objects.all()
+    return render(request, 'project_list.html', {'projects': projects})
 
+
+@login_required
+def project_create(request):
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES)
+        if form.is_valid():
+            project = form.save()
+            messages.success(request, "Project created successfully!")
+            return redirect('project_detail', project_id=project.id)
+    else:
+        form = ProjectForm()
+    return render(request, 'project_create.html', {'form': form})
+
+
+@login_required
+def project_edit(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES, instance=project)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Project updated successfully!")
+            return redirect('project_detail', project_id=project.id)
+    else:
+        form = ProjectForm(instance=project)
+    return render(request, 'project_edit.html', {'form': form, 'project': project})
+
+
+@login_required
+def project_delete(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    if request.method == 'POST':
+        confirm_name = request.POST.get('confirm_name')
+        if confirm_name == project.name:
+            project.delete()
+            messages.success(request, "Project deleted successfully.")
+            return redirect('project_list')
+        else:
+            messages.error(request, "Project name does not match. Deletion canceled.")
+    return render(request, 'project_delete.html', {'project': project})
+
+
+@login_required
+def project_list(request):
+    projects = Project.objects.all()
+    return render(request, 'project_list.html', {'projects': projects})
+
+
+@login_required
+def item_create(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    if request.method == 'POST':
+        form = ItemForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.project = project
+            item.save()
+            messages.success(request, "Item created successfully!")
+            return redirect('project_detail', project_id=project.id)
+    else:
+        form = ItemForm(initial={'item_type': request.GET.get('item_type')})
+    return render(request, 'item_create.html', {'form': form, 'project': project})
+
+
+@login_required
+def item_edit(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    if request.method == 'POST':
+        form = ItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Item updated successfully!")
+            return redirect('project_detail', project_id=item.project.id)
+    else:
+        form = ItemForm(instance=item)
+    return render(request, 'item_edit.html', {'form': form, 'item': item})
+
+
+@require_POST
+@login_required
+def update_next_step(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    data = json.loads(request.body)
+    item.next_step_owner = data.get('next_step_owner')
+    item.save()
+    return JsonResponse({'success': True})
+
+
+# ✅ NEW VIEWS BELOW
 
 @login_required
 def project_detail(request, project_id):
@@ -73,8 +162,4 @@ def update_project_info(request, project_id):
     project.description = description
     project.save()
 
-    return JsonResponse({'success': True})
-
-
-# Your existing views (item_edit, item_create, project_create, project_edit, etc.) go here
-# Make sure to keep them as they are
+    return JsonResponse({'success': True, 'name': project.name})
