@@ -97,6 +97,9 @@ def delete_update(request, item_id, timestamp):
 
 @login_required
 def project_edit(request, project_id):
+    """
+    Edit an existing project, including updating contacts JSON.
+    """
     project = get_object_or_404(Project, id=project_id)
     if request.method == 'POST':
         form = ProjectForm(request.POST, request.FILES, instance=project)
@@ -142,6 +145,10 @@ def item_create(request, project_id):
 
 @login_required
 def project_detail(request, project_id):
+    """
+    Show a project's details, contacts, and items (tasks, sub-projects, activities).
+    Supports sorting by ?sort=status or ?sort=priority.
+    """
     project = get_object_or_404(Project, id=project_id)
     sort = request.GET.get('sort')
     
@@ -172,6 +179,9 @@ def project_detail(request, project_id):
 
 @login_required
 def project_delete(request, project_id):
+    """
+    Confirm and delete a project, requiring the user to re-enter the project name.
+    """
     project = get_object_or_404(Project, id=project_id)
     if request.method == 'POST':
         confirmation = request.POST.get('confirmation', '')
@@ -185,11 +195,17 @@ def project_delete(request, project_id):
 
 @login_required
 def project_list(request):
+    """
+    List all projects with basic info, e.g. for a "My Projects" page.
+    """
     projects = Project.objects.all().order_by('-id')
     return render(request, 'project_list.html', {'projects': projects})
 
 @login_required
 def custom_logout(request):
+    """
+    Custom logout view that accepts both GET and POST methods.
+    """
     if request.method in ['GET', 'POST']:
         logout(request)
         messages.success(request, "You have been logged out.")
@@ -200,6 +216,9 @@ def custom_logout(request):
 
 @login_required
 def dashboard(request):
+    """
+    Dashboard showing global item counts and a summary of each project's open items.
+    """
     from datetime import date
     open_items_count = Item.objects.filter(status__in=['new', 'in_progress', 'on_hold']).count()
     high_priority_count = Item.objects.filter(priority='high', status__in=['new','in_progress','on_hold']).count()
