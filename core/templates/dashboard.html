@@ -17,7 +17,13 @@
                     {% for level, count in priorities.items %}
                     <div>
                         <p class="mb-1 fw-semibold">{{ level }}</p>
-                        <span class="badge bg-primary rounded-pill px-3 py-2">{{ count }}</span>
+                        <span class="badge rounded-pill px-3 py-2
+                            {% if level == 'High' %}badge-priority-high
+                            {% elif level == 'Medium' %}badge-priority-medium
+                            {% elif level == 'Low' %}badge-priority-low
+                            {% endif %}">
+                            {{ count }}
+                        </span>
                     </div>
                     {% endfor %}
                 </div>

@@ -97,3 +97,18 @@ footer {
 .card .fw-semibold {
     font-weight: 600;
 }
+.badge-priority-high {
+    background-color: #ab47bc;
+    color: white;
+}
+
+.badge-priority-medium {
+    background-color: #ce93d8;
+    color: #4a148c;
+}
+
+.badge-priority-low {
+    background-color: #ede7f6;
+    color: #4a148c;
+    border: 1px solid #d1c4e9;
+}
