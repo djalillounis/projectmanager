@@ -216,3 +216,20 @@ def update_project_info(request, project_id):
     project.save()
 
     return JsonResponse({'success': True, 'name': project.name})
+
+
+@login_required
+def item_create(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    if request.method == 'POST':
+        form = ItemForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.project = project
+            item.save()
+            messages.success(request, "Item created successfully!")
+            return redirect('project_detail', project_id=project.id)
+    else:
+        form = ItemForm(initial={'item_type': request.GET.get('item_type')})
+    return render(request, 'item_create.html', {'form': form, 'project': project})
+
