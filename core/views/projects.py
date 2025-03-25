@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import json
 from django.views.decorators.http import require_POST
-from core.models import Project, Item
+from core.models import Project, Item , Contact
 from core.forms import ProjectForm, ContactForm
 
 
@@ -26,12 +26,33 @@ def project_create(request):
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             project = form.save()
-            messages.success(request, "Project created successfully!")
+
+            # Handle contacts JSON
+            contacts_json = request.POST.get('contacts_json', '[]')
+            try:
+                contacts_data = json.loads(contacts_json)
+                for contact in contacts_data:
+                    name = contact.get('name', '').strip()
+                    email = contact.get('email', '').strip()
+                    phone = contact.get('phone', '').strip()
+                    role = contact.get('role', '').strip()
+                    if name or email or phone or role:
+                        Contact.objects.create(
+                            project=project,
+                            name=name,
+                            email=email,
+                            phone=phone,
+                            role=role,
+                            contact_type='external'  # default; or change based on UI later
+                        )
+            except json.JSONDecodeError:
+                messages.warning(request, "Some contacts could not be processed.")
+
+            messages.success(request, "Project and contacts created successfully!")
             return redirect('project_detail', project_id=project.id)
     else:
         form = ProjectForm()
     return render(request, 'project_create.html', {'form': form})
-
 
 @login_required
 def project_edit(request, project_id):
