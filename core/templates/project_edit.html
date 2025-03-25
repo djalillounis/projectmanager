@@ -1,126 +1,291 @@
 {% extends "base.html" %}
-{% load static %}
-{% block title %}Edit Project{% endblock %}
+{% load formatting %}
+{% block title %}Project Details{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Edit Project: {{ project.name }}</h2>
-    
-    <form method="post" enctype="multipart/form-data" id="project-edit-form">
-        {% csrf_token %}
-        
-        <!-- Project Name -->
-        <div class="mb-3">
-            <label for="id_name" class="form-label">Name</label>
-            {{ form.name }}
-        </div>
-        
-        <!-- Project Description -->
-        <div class="mb-3">
-            <label for="id_description" class="form-label">Description</label>
-            {{ form.description }}
-        </div>
-        
-        <!-- Project Logo -->
-        <div class="mb-3">
-            <label for="id_logo" class="form-label">Logo</label>
-            {{ form.logo }}
-        </div>
-        
-        <!-- Contacts Section -->
-        <div class="mb-3">
-            <label class="form-label">Contacts</label>
-            <div id="contacts-container" class="row g-3 mb-2"></div>
-            <button type="button" class="btn btn-secondary" id="add-contact-btn">+ Add Contact</button>
-            <!-- Hidden field to store contacts JSON -->
-            <input type="hidden" name="contacts_json" id="contacts-json">
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Update Project</button>
-        <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary ms-2">Cancel</a>
-    </form>
+<div class="container mt-4">
+  <!-- Header: Project Name and Action Buttons -->
+  <div class="d-flex justify-content-between align-items-center">
+      <h1>{{ project.name }}</h1>
+      <div>
+          <a href="{% url 'project_edit' project.id %}" class="btn btn-warning me-2">Edit Project</a>
+          <a href="{% url 'project_delete' project.id %}" class="btn btn-danger me-2">Delete Project</a>
+          <a href="{% url 'project_list' %}" class="btn btn-secondary">Back to Projects</a>
+      </div>
+  </div>
+  <p>{{ project.description }}</p>
+  
+  <!-- Contacts Section (displayed horizontally) -->
+  <h4>Contacts</h4>
+  <div style="max-width: 100%; overflow-x: auto; padding: 10px; border: 1px solid #ddd; margin-bottom: 20px;">
+    <div style="display: flex; gap: 20px;">
+      {% if project.contacts %}
+        {% for contact in project.contacts %}
+          <div style="min-width: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+              <strong>{{ contact.name }}</strong><br>
+              Email: {{ contact.email }}<br>
+              Phone: {{ contact.phone }}<br>
+              Role: {{ contact.role }}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No contacts.</p>
+      {% endif %}
+    </div>
+  </div>
+  
+  <!-- Tasks Table -->
+  <h4>
+    Tasks 
+    <a href="{% url 'item_create' project.id %}?item_type=task" class="btn btn-sm btn-secondary ms-2">+</a>
+  </h4>
+  {% if tasks %}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Created Date</th>
+        <th>Due Date</th>
+        <th><a href="?sort=status">Status</a></th>
+        <th><a href="?sort=priority">Priority</a></th>
+        <th>Next Step</th>
+        <th>
+          Last Update<br>
+          <small>(dd-mm-yyyy hh:mm)</small>
+        </th>
+        <th>Last Update Text</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in tasks %}
+      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
+        <td>{{ item.short_description }}</td>
+        <td>{{ item.date_created|date:"d-m-Y H:i" }}</td>
+        <td>{{ item.due_date|date:"d-m-Y" }}</td>
+        <td>{{ item.status }}</td>
+        <td>{{ item.priority }}</td>
+        <td>
+          <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
+          <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
+        </td>
+        <td>
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last_update=item.updates|last %}
+              {{ last_update.timestamp|format_iso }}
+            {% endwith %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+        <td>
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last_update=item.updates|last %}
+              {{ last_update.comment }}
+            {% endwith %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No tasks available.</p>
+  {% endif %}
+  
+  <!-- Sub-Projects Table -->
+  <h4 class="mt-4">
+    Sub-Projects 
+    <a href="{% url 'item_create' project.id %}?item_type=sub_project" class="btn btn-sm btn-secondary ms-2">+</a>
+  </h4>
+  {% if sub_projects %}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Created Date</th>
+        <th>Due Date</th>
+        <th><a href="?sort=status">Status</a></th>
+        <th><a href="?sort=priority">Priority</a></th>
+        <th>Next Step</th>
+        <th>
+          Last Update<br>
+          <small>(dd-mm-yyyy hh:mm)</small>
+        </th>
+        <th>Last Update Text</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in sub_projects %}
+      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
+        <td>{{ item.short_description }}</td>
+        <td>{{ item.date_created|date:"d-m-Y H:i" }}</td>
+        <td>{{ item.due_date|date:"d-m-Y" }}</td>
+        <td>{{ item.status }}</td>
+        <td>{{ item.priority }}</td>
+        <td>
+          <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
+          <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
+        </td>
+        <td>
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last_update=item.updates|last %}
+              {{ last_update.timestamp|format_iso }}
+            {% endwith %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+        <td>
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last_update=item.updates|last %}
+              {{ last_update.comment }}
+            {% endwith %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No sub-projects available.</p>
+  {% endif %}
+  
+  <!-- Activities Table -->
+  <h4 class="mt-4">
+    Activities 
+    <a href="{% url 'item_create' project.id %}?item_type=activity" class="btn btn-sm btn-secondary ms-2">+</a>
+  </h4>
+  {% if activities %}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Created Date</th>
+        <th>Due Date</th>
+        <th><a href="?sort=status">Status</a></th>
+        <th><a href="?sort=priority">Priority</a></th>
+        <th>Next Step</th>
+        <th>
+          Last Update<br>
+          <small>(dd-mm-yyyy hh:mm)</small>
+        </th>
+        <th>Last Update Text</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in activities %}
+      <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
+        <td>{{ item.short_description }}</td>
+        <td>{{ item.date_created|date:"d-m-Y H:i" }}</td>
+        <td>{{ item.due_date|date:"d-m-Y" }}</td>
+        <td>{{ item.status }}</td>
+        <td>{{ item.priority }}</td>
+        <td>
+          <span class="editable-next-step" data-item-id="{{ item.id }}">{{ item.next_step_owner|default:"-" }}</span>
+          <i class="fa fa-pencil edit-icon" style="cursor:pointer;" onclick="event.stopPropagation(); editNextStep({{ item.id }});"></i>
+        </td>
+        <td>
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last_update=item.updates|last %}
+              {{ last_update.timestamp|format_iso }}
+            {% endwith %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+        <td>
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last_update=item.updates|last %}
+              {{ last_update.comment }}
+            {% endwith %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No activities available.</p>
+  {% endif %}
 </div>
 
-<!-- Pre-populate existing contacts using Django's json_script filter -->
-{{ project.contacts|json_script:"existingContacts" }}
-
-{% endblock %}
-
-{% block extra_js %}
+<!-- Inline Editing JS for Next Step -->
 <script>
-// Returns HTML for a single contact row with an optional contact object for pre-filling.
-function getContactRowHTML(index, contact = {}) {
-    let name = contact.name || '';
-    let email = contact.email || '';
-    let phone = contact.phone || '';
-    let role = contact.role || '';
-    return `
-    <div class="row mb-2 contact-row" data-index="${index}">
-        <div class="col-md-3">
-            <input type="text" class="form-control" placeholder="Name" name="contact_name_${index}" value="${name}">
-        </div>
-        <div class="col-md-3">
-            <input type="email" class="form-control" placeholder="Email" name="contact_email_${index}" value="${email}">
-        </div>
-        <div class="col-md-2">
-            <input type="text" class="form-control" placeholder="Phone" name="contact_phone_${index}" value="${phone}">
-        </div>
-        <div class="col-md-3">
-            <input type="text" class="form-control" placeholder="Role" name="contact_role_${index}" value="${role}">
-        </div>
-        <div class="col-md-1 d-flex align-items-center">
-            <button type="button" class="btn btn-danger remove-contact-btn">&times;</button>
-        </div>
-    </div>
-    `;
-}
-
-let contactIndex = 0;
-const contactsContainer = document.getElementById('contacts-container');
-
-// Adds a contact row; if a contact object is provided, its values pre-fill the fields.
-function addContactRow(contact = {}) {
-    contactsContainer.insertAdjacentHTML('beforeend', getContactRowHTML(contactIndex, contact));
-    contactIndex++;
-}
-
-// Remove a contact row when its remove button is clicked.
-document.addEventListener('click', function(e) {
-    if (e.target && e.target.classList.contains('remove-contact-btn')) {
-        e.target.closest('.contact-row').remove();
+function editNextStep(itemId) {
+  var span = document.querySelector('.editable-next-step[data-item-id="'+itemId+'"]');
+  if (!span) return;
+  var currentValue = span.innerText.trim();
+  var input = document.createElement('input');
+  input.type = 'text';
+  input.value = currentValue;
+  input.className = 'form-control';
+  input.style.width = '150px';
+  span.parentNode.replaceChild(input, span);
+  input.focus();
+  input.addEventListener('blur', function() {
+    saveNextStep(itemId, input.value, input);
+  });
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      input.blur();
     }
-});
+  });
+}
 
-// Handler for the "Add Contact" button.
-document.getElementById('add-contact-btn').addEventListener('click', function() {
-    addContactRow();
-});
+function saveNextStep(itemId, newValue, inputElem) {
+  fetch('/api/item/' + itemId + '/update_next_step/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({ next_step: newValue })
+  })
+  .then(response => response.json())
+  .then(data => {
+    var span = document.createElement('span');
+    span.className = 'editable-next-step';
+    span.setAttribute('data-item-id', itemId);
+    span.innerText = data.next_step || newValue;
+    inputElem.parentNode.replaceChild(span, inputElem);
+    var icon = document.createElement('i');
+    icon.className = 'fa fa-pencil edit-icon';
+    icon.style.cursor = 'pointer';
+    icon.onclick = function(e) {
+      e.stopPropagation();
+      editNextStep(itemId);
+    };
+    span.parentNode.appendChild(icon);
+  })
+  .catch(error => {
+    console.error('Error updating Next Step:', error);
+    var span = document.createElement('span');
+    span.className = 'editable-next-step';
+    span.setAttribute('data-item-id', itemId);
+    span.innerText = newValue;
+    inputElem.parentNode.replaceChild(span, inputElem);
+  });
+}
 
-// Before the form is submitted, gather all contact rows and save them as JSON in the hidden input.
-document.getElementById('project-edit-form').addEventListener('submit', function(e) {
-    const rows = contactsContainer.querySelectorAll('.contact-row');
-    let contactsData = [];
-    rows.forEach(row => {
-        let name = row.querySelector('input[placeholder="Name"]').value.trim();
-        let email = row.querySelector('input[placeholder="Email"]').value.trim();
-        let phone = row.querySelector('input[placeholder="Phone"]').value.trim();
-        let role = row.querySelector('input[placeholder="Role"]').value.trim();
-        // Include this row only if at least one field has content
-        if (name || email || phone || role) {
-            contactsData.push({ name, email, phone, role });
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
         }
-    });
-    document.getElementById('contacts-json').value = JSON.stringify(contactsData);
-});
-
-// Pre-populate contact rows using the JSON data from the server.
-let existingContactsElement = document.getElementById('existingContacts');
-if (existingContactsElement) {
-    let existingContacts = JSON.parse(existingContactsElement.textContent);
-    existingContacts.forEach(function(contact) {
-        addContactRow(contact);
-    });
+    }
+    return cookieValue;
 }
 </script>
-{% endblock %}
-
