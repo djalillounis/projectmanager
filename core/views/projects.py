@@ -6,7 +6,7 @@ import json
 from django.views.decorators.http import require_POST
 from core.models import Project, Item , Contact
 from core.forms import ProjectForm, ContactForm
-
+from datetime import date
 
 @login_required
 def dashboard(request):
@@ -17,7 +17,18 @@ def dashboard(request):
 @login_required
 def project_list(request):
     projects = Project.objects.all()
+    today = date.today()
+
+    for project in projects:
+        project.task_count = project.item_set.filter(item_type='task').count()
+        project.subproject_count = project.item_set.filter(item_type='sub_project').count()
+        project.activity_count = project.item_set.filter(item_type='activity').count()
+        project.overdue_count = project.item_set.filter(
+            due_date__lt=today
+        ).exclude(status='completed').count()
+
     return render(request, 'project_list.html', {'projects': projects})
+
 
 
 @login_required

@@ -1,0 +1,86 @@
+/* Global Background */
+body {
+    background-color: #ffffff;
+    color: #333;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #6a1b9a; /* deep purple */
+}
+
+.navbar-brand, .nav-link, .navbar-text {
+    color: #ffffff !important;
+}
+
+.nav-link:hover {
+    color: #d1c4e9 !important; /* lighter purple */
+}
+
+/* Primary button */
+.btn-primary {
+    background-color: #7e57c2;
+    border-color: #7e57c2;
+}
+
+.btn-primary:hover {
+    background-color: #673ab7;
+    border-color: #673ab7;
+}
+
+/* Secondary button */
+.btn-secondary {
+    background-color: #ede7f6;
+    color: #4a148c;
+    border-color: #d1c4e9;
+}
+
+.btn-secondary:hover {
+    background-color: #d1c4e9;
+    color: #4a148c;
+}
+
+/* Headings and dividers */
+h1, h2, h3, h4 {
+    color: #4a148c;
+}
+
+hr {
+    border-top: 2px solid #d1c4e9;
+}
+
+.card {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+}
+
+.form-label {
+    color: #4a148c;
+    font-weight: 500;
+}
+
+/* Tabs */
+.nav-tabs .nav-link.active {
+    background-color: #ede7f6;
+    border-color: #d1c4e9 #d1c4e9 #fff;
+    color: #4a148c;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: #f3e5f5;
+    color: #4a148c;
+}
+
+/* Table headers */
+.table thead {
+    background-color: #f3e5f5;
+}
+
+/* Footer */
+footer {
+    margin-top: 4rem;
+    padding: 1rem 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #999;
+}
