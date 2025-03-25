@@ -84,7 +84,6 @@ def delete_item_file(request, item_id, timestamp):
 def delete_update(request, item_id, timestamp):
     """
     Delete an entire update from an item by matching its timestamp.
-    (If you still use this functionality; otherwise you can remove it.)
     """
     item = get_object_or_404(Item, id=item_id)
     if item.updates:
@@ -119,6 +118,10 @@ def project_edit(request, project_id):
 
 @login_required
 def item_create(request, project_id):
+    """
+    Create a new item under a given project.
+    Optionally preselect item_type via ?item_type=task.
+    """
     project = get_object_or_404(Project, id=project_id)
     if request.method == 'POST':
         form = ItemForm(request.POST)
