@@ -1,14 +1,6 @@
 from django.db import models
 
 
-
-
-
-
-
-
-
-
 class Project(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -50,3 +42,20 @@ class Item(models.Model):
     def __str__(self):
         return f"{self.item_type}: {self.short_description}"
 
+
+
+class Contact(models.Model):
+    CONTACT_TYPE_CHOICES = [
+        ('internal', 'Internal'),
+        ('external', 'External'),
+    ]
+
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='contacts')
+    name = models.CharField(max_length=100)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=50, blank=True, null=True)
+    role = models.CharField(max_length=100, blank=True, null=True)
+    contact_type = models.CharField(max_length=10, choices=CONTACT_TYPE_CHOICES, default='external')
+
+    def __str__(self):
+        return f"{self.name} ({self.contact_type})"
