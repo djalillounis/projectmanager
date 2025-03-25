@@ -51,10 +51,7 @@
         <th><a href="?sort=status">Status</a></th>
         <th><a href="?sort=priority">Priority</a></th>
         <th>Next Step Owner</th>
-        <th>
-          Last Update<br>
-          <small>(dd-mm-yyyy hh:mm)</small>
-        </th>
+        <th>Last Update</th>
         <th>Last Update Text</th>
       </tr>
     </thead>
@@ -62,8 +59,8 @@
       {% for item in tasks %}
       <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
         <td>{{ item.short_description }}</td>
-        <td>{{ item.date_created|date:"d-m-Y H:i" }}</td>
-        <td>{{ item.due_date|date:"d-m-Y" }}</td>
+        <td>{{ item.date_created|format_iso }}</td>
+        <td>{{ item.due_date|date:"d-M-y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
         <td>
@@ -111,10 +108,7 @@
         <th><a href="?sort=status">Status</a></th>
         <th><a href="?sort=priority">Priority</a></th>
         <th>Next Step Owner</th>
-        <th>
-          Last Update<br>
-          <small>(dd-mm-yyyy hh:mm)</small>
-        </th>
+        <th>Last Update</th>
         <th>Last Update Text</th>
       </tr>
     </thead>
@@ -122,8 +116,8 @@
       {% for item in sub_projects %}
       <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
         <td>{{ item.short_description }}</td>
-        <td>{{ item.date_created|date:"d-m-Y H:i" }}</td>
-        <td>{{ item.due_date|date:"d-m-Y" }}</td>
+        <td>{{ item.date_created|format_iso }}</td>
+        <td>{{ item.due_date|date:"d-M-y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
         <td>
@@ -171,10 +165,7 @@
         <th><a href="?sort=status">Status</a></th>
         <th><a href="?sort=priority">Priority</a></th>
         <th>Next Step Owner</th>
-        <th>
-          Last Update<br>
-          <small>(dd-mm-yyyy hh:mm)</small>
-        </th>
+        <th>Last Update</th>
         <th>Last Update Text</th>
       </tr>
     </thead>
@@ -182,8 +173,8 @@
       {% for item in activities %}
       <tr onclick="location.href='{% url 'item_edit' item.id %}'" style="cursor: pointer;">
         <td>{{ item.short_description }}</td>
-        <td>{{ item.date_created|date:"d-m-Y H:i" }}</td>
-        <td>{{ item.due_date|date:"d-m-Y" }}</td>
+        <td>{{ item.date_created|format_iso }}</td>
+        <td>{{ item.due_date|date:"d-M-y" }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.priority }}</td>
         <td>
@@ -247,51 +238,4 @@ function saveNextStep(itemId, newValue, inputElem) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie('csrftoken')
-    },
-    body: JSON.stringify({ next_step: newValue })
-  })
-  .then(response => response.json())
-  .then(data => {
-    var span = document.createElement('span');
-    span.className = 'editable-next-step';
-    span.setAttribute('data-item-id', itemId);
-    span.innerText = data.next_step || newValue;
-
-    inputElem.parentNode.replaceChild(span, inputElem);
-
-    var icon = document.createElement('i');
-    icon.className = 'fa fa-pencil edit-icon';
-    icon.style.cursor = 'pointer';
-    icon.onclick = function(e) {
-      e.stopPropagation();
-      editNextStep(itemId);
-    };
-    span.parentNode.appendChild(icon);
-  })
-  .catch(error => {
-    console.error('Error updating Next Step Owner:', error);
-    var span = document.createElement('span');
-    span.className = 'editable-next-step';
-    span.setAttribute('data-item-id', itemId);
-    span.innerText = newValue;
-    inputElem.parentNode.replaceChild(span, inputElem);
-  });
-}
-
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    let cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-      let cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-}
-</script>
-{% endblock %}
+      'X-CSRFToken': getCookie
