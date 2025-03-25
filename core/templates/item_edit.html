@@ -3,116 +3,57 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Edit Item: {{ item.short_description }}</h2>
-    
-    <!-- Main Item Edit Form -->
-    <form method="post" class="mb-4">
-        {% csrf_token %}
-        <div class="row mb-3">
-            <label for="id_item_type" class="col-sm-2 col-form-label">Item Type</label>
-            <div class="col-sm-10">
-                {{ form.item_type }}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <label for="id_short_description" class="col-sm-2 col-form-label">Description</label>
-            <div class="col-sm-10">
-                {{ form.short_description }}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <label for="id_due_date" class="col-sm-2 col-form-label">Due Date</label>
-            <div class="col-sm-10">
-                {{ form.due_date }}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <label for="id_status" class="col-sm-2 col-form-label">Status</label>
-            <div class="col-sm-10">
-                {{ form.status }}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <label for="id_priority" class="col-sm-2 col-form-label">Priority</label>
-            <div class="col-sm-10">
-                {{ form.priority }}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <label for="id_owner" class="col-sm-2 col-form-label">Owner</label>
-            <div class="col-sm-10">
-                {{ form.owner }}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <label for="id_next_step_owner" class="col-sm-2 col-form-label">Next Step Owner</label>
-            <div class="col-sm-10">
-                {{ form.next_step_owner }}
-            </div>
-        </div>
-        <div class="d-flex justify-content-start">
-            <button type="submit" class="btn btn-primary">Update Item</button>
-            <a href="{% url 'project_detail' item.project.id %}" class="btn btn-secondary ms-2">Back to Project</a>
-        </div>
-    </form>
-    
-    <hr>
-    
-    <!-- Updates & Files Section -->
-    <h3>Updates & Files</h3>
-    
-    <!-- Form to add a new update with file upload -->
-    <form method="post" enctype="multipart/form-data" id="update-form" class="mb-4">
-        {% csrf_token %}
-        <!-- Hidden field to differentiate update form submission -->
-        <input type="hidden" name="update_form" value="1">
-        <div class="row mb-3">
-            <label for="update_comment" class="col-sm-2 col-form-label">Update Comment</label>
-            <div class="col-sm-10">
-                <textarea name="update_comment" id="update_comment" class="form-control" rows="2"></textarea>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <label for="update_file" class="col-sm-2 col-form-label">Upload File</label>
-            <div class="col-sm-10">
-                <input type="file" name="update_file" id="update_file" class="form-control">
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Add Update</button>
-    </form>
-    
-    <!-- Display Existing File Updates -->
-    <h4>Existing Files</h4>
-    {% if file_updates %}
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Timestamp</th>
-                <th>Comment</th>
-                <th>File</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for update in file_updates %}
-            <tr style="cursor: pointer;">
-                <td>{{ update.timestamp }}</td>
-                <td>{{ update.comment }}</td>
-                <td>
-                    <a href="{{ update.file }}" target="_blank">View File</a>
-                </td>
-                <td>
-                    <a href="{% url 'delete_update' item.id update.timestamp %}" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <div class="d-flex align-items-center">
-        <span class="me-2">0</span>
-        <a href="#" class="btn btn-primary" onclick="document.getElementById('update_file').click(); return false;">+</a>
-    </div>
-    {% endif %}
+  <h2>Edit Item: {{ item.short_description }}</h2>
+  <form method="post" id="item-edit-form">
+      {% csrf_token %}
+      
+      <!-- Item Type -->
+      <div class="mb-3">
+          <label for="id_item_type" class="form-label">Item Type</label>
+          {{ form.item_type }}
+      </div>
+      
+      <!-- Short Description -->
+      <div class="mb-3">
+          <label for="id_short_description" class="form-label">Short Description</label>
+          {{ form.short_description }}
+      </div>
+      
+      <!-- Due Date -->
+      <div class="mb-3">
+          <label for="id_due_date" class="form-label">Due Date</label>
+          {{ form.due_date }}
+      </div>
+      
+      <!-- Status -->
+      <div class="mb-3">
+          <label for="id_status" class="form-label">Status</label>
+          {{ form.status }}
+      </div>
+      
+      <!-- Priority -->
+      <div class="mb-3">
+          <label for="id_priority" class="form-label">Priority</label>
+          {{ form.priority }}
+      </div>
+      
+      <!-- Owner -->
+      <div class="mb-3">
+          <label for="id_owner" class="form-label">Owner</label>
+          {{ form.owner }}
+      </div>
+      
+      <!-- Next Step Owner -->
+      <div class="mb-3">
+          <label for="id_next_step_owner" class="form-label">Next Step Owner</label>
+          {{ form.next_step_owner }}
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary me-2">Save</button>
+          <a href="{% url 'project_detail' item.project.id %}" class="btn btn-secondary">Close</a>
+      </div>
+  </form>
 </div>
 {% endblock %}
