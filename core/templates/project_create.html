@@ -1,47 +1,47 @@
 {% extends "base.html" %}
 {% load static %}
+{% load formatting %}
 {% block title %}Create New Project{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Create New Project</h2>
-    
+    <h2 class="mb-4 text-purple">Create New Project</h2>
+
     <form method="post" enctype="multipart/form-data" id="project-form">
         {% csrf_token %}
-        
-        <!-- Name Field -->
+
+        <!-- Name -->
         <div class="mb-3">
             <label for="id_name" class="form-label">Name</label>
-            {{ form.name }}
+            {{ form.name|add_class:"form-control" }}
         </div>
-        
-        <!-- Description Field -->
+
+        <!-- Description -->
         <div class="mb-3">
             <label for="id_description" class="form-label">Description</label>
-            {{ form.description }}
+            {{ form.description|add_class:"form-control" }}
         </div>
-        
-        <!-- Logo Field -->
+
+        <!-- Logo Upload -->
         <div class="mb-3">
             <label for="id_logo" class="form-label">Logo</label>
-            {{ form.logo }}
+            <input type="file" name="logo" id="id_logo" class="form-control">
         </div>
-        
+
+        <!-- Products Placeholder -->
+        <div class="mb-3">
+            <label class="form-label">Products</label>
+            <input type="text" class="form-control text-muted" placeholder="(Coming soon...)" disabled>
+        </div>
+
         <!-- Contacts Section -->
         <div class="mb-3">
             <label class="form-label">Contacts</label>
-            <!-- The container where new contact rows go -->
             <div id="contacts-container" class="row g-3 mb-2"></div>
-            
-            <!-- Add Contact Button -->
-            <button type="button" class="btn btn-secondary" id="add-contact-btn">
-                + Add Contact
-            </button>
-            
-            <!-- Hidden input to store final JSON -->
+            <button type="button" class="btn btn-secondary btn-sm" id="add-contact-btn">+ Add Contact</button>
             <input type="hidden" name="contacts_json" id="contacts-json">
         </div>
-        
+
         <button type="submit" class="btn btn-primary">Create Project</button>
     </form>
 </div>
@@ -49,7 +49,7 @@
 
 {% block extra_js %}
 <script>
-// A template for a single contact row
+// Contact Row Template
 function getContactRowHTML(index) {
     return `
     <div class="row mb-2 contact-row" data-index="${index}">
@@ -80,18 +80,17 @@ function addContactRow() {
     contactIndex++;
 }
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (e.target && e.target.classList.contains('remove-contact-btn')) {
         e.target.closest('.contact-row').remove();
     }
 });
 
-document.getElementById('add-contact-btn').addEventListener('click', function() {
+document.getElementById('add-contact-btn').addEventListener('click', function () {
     addContactRow();
 });
 
-// Before form submission, gather all contacts into JSON
-document.getElementById('project-form').addEventListener('submit', function(e) {
+document.getElementById('project-form').addEventListener('submit', function () {
     const container = document.getElementById('contacts-container');
     const rows = container.querySelectorAll('.contact-row');
     let contactsData = [];
@@ -101,8 +100,6 @@ document.getElementById('project-form').addEventListener('submit', function(e) {
         let email = row.querySelector('input[placeholder="Email"]').value.trim();
         let phone = row.querySelector('input[placeholder="Phone"]').value.trim();
         let role = row.querySelector('input[placeholder="Role"]').value.trim();
-
-        // Only add if at least one field is filled (optional logic)
         if (name || email || phone || role) {
             contactsData.push({ name, email, phone, role });
         }
@@ -112,4 +109,3 @@ document.getElementById('project-form').addEventListener('submit', function(e) {
 });
 </script>
 {% endblock %}
-
