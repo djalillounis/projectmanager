@@ -84,3 +84,16 @@ footer {
     font-size: 0.9rem;
     color: #999;
 }
+/* Custom Purple Utility */
+.text-purple {
+    color: #6a1b9a;
+}
+
+/* Dashboard card highlights */
+.card .badge {
+    font-size: 0.9rem;
+}
+
+.card .fw-semibold {
+    font-weight: 600;
+}

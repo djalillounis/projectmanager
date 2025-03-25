@@ -2,72 +2,51 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <!-- Stats Cards Row -->
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-header">
-                    Open Items
-                </div>
-                <div class="card-body">
-                    <h3 class="card-title">{{ open_items_count }}</h3>
-                    <p class="card-text">Total number of open items.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-header">
-                    High Priority Items
-                </div>
-                <div class="card-body">
-                    <h3 class="card-title">{{ high_priority_count }}</h3>
-                    <p class="card-text">Items with high priority.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-header">
-                    Overdue Items
-                </div>
-                <div class="card-body">
-                    <h3 class="card-title">{{ overdue_count }}</h3>
-                    <p class="card-text">Items that are overdue.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Buttons Row for My Projects and Create New Project -->
-    <div class="d-flex justify-content-end mb-3">
-        <a href="{% url 'project_list' %}" class="btn btn-secondary me-2">My Projects</a>
-        <a href="{% url 'project_create' %}" class="btn btn-primary">Create New Project</a>
-    </div>
-    
-    <!-- Projects Overview Table -->
-    <h2 class="mt-4">Projects Overview</h2>
-    <table class="table table-hover" id="projects-table">
-        <thead>
-            <tr>
-                <th>Project Name</th>
-                <th>Open Tasks</th>
-                <th>Open Sub-Projects</th>
-                <th>Open Activities</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for row in table_data %}
-            <tr onclick="location.href='{% url 'project_detail' row.project.id %}'" style="cursor: pointer;">
-                <td>{{ row.project.name }}</td>
-                <td>{{ row.tasks_open }}</td>
-                <td>{{ row.subprojects_open }}</td>
-                <td>{{ row.activities_open }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endblock %}
 
+<h2 class="mb-4">Dashboard Overview</h2>
+
+<!-- Summary Cards -->
+<div class="row mb-5">
+    {% for type, priorities in summary.items %}
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="text-uppercase text-purple">{{ type|title }}</h5>
+                <hr>
+                <div class="d-flex justify-content-around">
+                    {% for level, count in priorities.items %}
+                    <div>
+                        <p class="mb-1 fw-semibold">{{ level }}</p>
+                        <span class="badge bg-primary rounded-pill px-3 py-2">{{ count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Project List -->
+<h4 class="mb-3">Projects</h4>
+{% if projects %}
+<div class="row">
+    {% for project in projects %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-primary">{{ project.name }}</h5>
+                <p class="card-text">{{ project.description|truncatewords:20 }}</p>
+                <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary w-100 mt-3">View Project</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    No projects available.
+</div>
+{% endif %}
+
+{% endblock %}
