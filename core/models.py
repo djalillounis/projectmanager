@@ -4,7 +4,7 @@ from django.db import models
 class Project(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
-    contacts = models.JSONField(null=True, blank=True)
+    ##  contacts = models.JSONField(null=True, blank=True)  old contacts field
     logo = models.ImageField(upload_to='logos/', null=True, blank=True)
     def __str__(self):
         return self.name
@@ -59,3 +59,4 @@ class Contact(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.contact_type})"
+0
