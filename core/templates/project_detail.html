@@ -50,7 +50,7 @@
         <th>Due Date</th>
         <th><a href="?sort=status">Status</a></th>
         <th><a href="?sort=priority">Priority</a></th>
-        <th>Next Step</th>
+        <th>Next Step Owner</th>
         <th>
           Last Update<br>
           <small>(dd-mm-yyyy hh:mm)</small>
@@ -110,7 +110,7 @@
         <th>Due Date</th>
         <th><a href="?sort=status">Status</a></th>
         <th><a href="?sort=priority">Priority</a></th>
-        <th>Next Step</th>
+        <th>Next Step Owner</th>
         <th>
           Last Update<br>
           <small>(dd-mm-yyyy hh:mm)</small>
@@ -170,7 +170,7 @@
         <th>Due Date</th>
         <th><a href="?sort=status">Status</a></th>
         <th><a href="?sort=priority">Priority</a></th>
-        <th>Next Step</th>
+        <th>Next Step Owner</th>
         <th>
           Last Update<br>
           <small>(dd-mm-yyyy hh:mm)</small>
@@ -217,7 +217,7 @@
   {% endif %}
 </div>
 
-<!-- Inline Editing JS for Next Step -->
+<!-- Inline Editing JS for Next Step Owner -->
 <script>
 function editNextStep(itemId) {
   var span = document.querySelector('.editable-next-step[data-item-id="'+itemId+'"]');
@@ -270,7 +270,7 @@ function saveNextStep(itemId, newValue, inputElem) {
     span.parentNode.appendChild(icon);
   })
   .catch(error => {
-    console.error('Error updating Next Step:', error);
+    console.error('Error updating Next Step Owner:', error);
     var span = document.createElement('span');
     span.className = 'editable-next-step';
     span.setAttribute('data-item-id', itemId);
