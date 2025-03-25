@@ -12,4 +12,5 @@ urlpatterns = [
     path('projects/<int:project_id>/items/create/', views.item_create, name='item_create'),
     path('items/<int:item_id>/edit/', views.item_edit, name='item_edit'),
     path('items/<int:item_id>/updates/delete/<str:timestamp>/', views.delete_update, name='delete_update'),
+    path('api/item/<int:item_id>/update_next_step/', views.update_next_step, name='update_next_step'),
 ]

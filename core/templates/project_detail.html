@@ -219,7 +219,7 @@
 <script>
 function editNextStep(itemId) {
   var span = document.querySelector('.editable-next-step[data-item-id="'+itemId+'"]');
-  if (!span) return;
+  if (!span) { return; }
   var currentValue = span.innerText.trim();
   var input = document.createElement('input');
   input.type = 'text';
@@ -228,6 +228,7 @@ function editNextStep(itemId) {
   input.style.width = '150px';
   span.parentNode.replaceChild(input, span);
   input.focus();
+
   input.addEventListener('blur', function() {
     saveNextStep(itemId, input.value, input);
   });
@@ -254,7 +255,9 @@ function saveNextStep(itemId, newValue, inputElem) {
     span.className = 'editable-next-step';
     span.setAttribute('data-item-id', itemId);
     span.innerText = data.next_step || newValue;
+
     inputElem.parentNode.replaceChild(span, inputElem);
+
     var icon = document.createElement('i');
     icon.className = 'fa fa-pencil edit-icon';
     icon.style.cursor = 'pointer';
@@ -275,17 +278,18 @@ function saveNextStep(itemId, newValue, inputElem) {
 }
 
 function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        let cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    let cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      let cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
     }
-    return cookieValue;
+  }
+  return cookieValue;
 }
 </script>
+{% endblock %}
