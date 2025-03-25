@@ -94,6 +94,21 @@ def item_edit(request, item_id):
         form = ItemForm(instance=item)
     return render(request, 'item_edit.html', {'form': form, 'item': item})
 
+@require_POST
+@login_required
+def delete_update(request, item_id, timestamp):
+    item = get_object_or_404(Item, id=item_id)
+    updates = item.updates or []
+
+    # Filter out the update by matching timestamp
+    filtered_updates = [u for u in updates if u.get("timestamp") != timestamp]
+
+    if len(filtered_updates) < len(updates):
+        item.updates = filtered_updates
+        item.save()
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False, 'message': 'Update not found'})
 
 @require_POST
 @login_required
