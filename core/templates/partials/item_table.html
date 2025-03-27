@@ -19,7 +19,7 @@
                        id="status-{{ item_type }}-{{ forloop.counter }}"
                        {% if status in selected_statuses %}checked{% endif %}>
                 <label class="form-check-label" for="status-{{ item_type }}-{{ forloop.counter }}">
-                  {{ status|title }}
+                  {{ status|capfirst }}
                 </label>
               </div>
               {% endfor %}
@@ -34,22 +34,30 @@
       </thead>
       <tbody>
         {% for item in items %}
-        <tr class="clickable-row" data-href="{% url 'item_edit' item.id %}">
-          <td>{{ item.short_description|default:"—" }}</td>
-          <td>{{ item.date_created|format_iso|default:"—" }}</td>
+        <tr class="clickable-row" onclick="window.location.href='{% url 'item_edit' item.id %}'">
+          <td>{{ item.short_description }}</td>
+          <td>{{ item.date_created|format_iso }}</td>
           <td>{{ item.due_date|date:"Y-m-d" }}</td>
-          <td>{{ item.status|title }}</td>
-          <td>{{ item.priority|title }}</td>
-          <td>{{ item.next_step_owner|default:"—" }}</td>
+          <td>{{ item.status|capfirst }}</td>
+          <td>{{ item.priority|capfirst }}</td>
+          <td>{{ item.next_step_owner }}</td>
           <td>
-            {% with item.updates|last as last_update %}
-              {{ last_update.timestamp|format_iso|default:"—" }}
-            {% endwith %}
+            {% if item.updates and item.updates|length > 0 %}
+              {% with last_update=item.updates|last %}
+                {{ last_update.timestamp|format_iso }}
+              {% endwith %}
+            {% else %}
+              —
+            {% endif %}
           </td>
           <td>
-            {% with item.updates|last as last_update %}
-              {{ last_update.text|default:"—" }}
-            {% endwith %}
+            {% if item.updates and item.updates|length > 0 %}
+              {% with last_update=item.updates|last %}
+                {{ last_update.comment }}
+              {% endwith %}
+            {% else %}
+              —
+            {% endif %}
           </td>
         </tr>
         {% empty %}
@@ -78,14 +86,32 @@
     });
   });
 
+  // Close on Apply
   document.getElementById('status-filter-form').addEventListener('submit', function () {
     document.querySelectorAll('.floating-status-filter').forEach(f => f.classList.remove('show'));
   });
-
-  // Make table row clickable
-  document.querySelectorAll('.clickable-row').forEach(row => {
-    row.addEventListener('click', function () {
-      window.location.href = this.dataset.href;
-    });
-  });
 </script>
+
+<style>
+  .clickable-row:hover {
+    background-color: #f3e5f5;
+    cursor: pointer;
+  }
+
+  .floating-status-filter {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
+    z-index: 10;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    min-width: 180px;
+  }
+
+  .floating-status-filter.show {
+    display: block;
+  }
+</style>
