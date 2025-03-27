@@ -8,7 +8,7 @@
             <th>Due Date</th>
             <th class="position-relative">
               Status
-              <button type="button" class="btn btn-link btn-sm p-0 ms-2 text-purple" onclick="toggleStatusFilter(this)" title="Filter Status">
+              <button type="button" class="btn btn-link btn-sm p-0 ms-2 text-purple filter-toggle" title="Filter Status">
                 <i class="bi bi-filter"></i>
               </button>
               <div class="floating-status-filter">
@@ -54,20 +54,24 @@
   </form>
   
   <script>
-  function toggleStatusFilter(button) {
-    const allFilters = document.querySelectorAll('.floating-status-filter');
-    allFilters.forEach(f => f.classList.remove('show'));
+  document.querySelectorAll('.filter-toggle').forEach(button => {
+    button.addEventListener('click', function (e) {
+      const filter = this.nextElementSibling;
+      document.querySelectorAll('.floating-status-filter').forEach(f => f.classList.remove('show'));
+      filter.classList.add('show');
   
-    const filter = button.nextElementSibling;
-    filter.classList.toggle('show');
-  
-    // Close on outside click
-    document.addEventListener('click', function handler(e) {
-      if (!filter.contains(e.target) && !button.contains(e.target)) {
-        filter.classList.remove('show');
-        document.removeEventListener('click', handler);
-      }
+      document.addEventListener('click', function handler(ev) {
+        if (!filter.contains(ev.target) && !button.contains(ev.target)) {
+          filter.classList.remove('show');
+          document.removeEventListener('click', handler);
+        }
+      });
     });
-  }
+  });
+  
+  // Close on Apply
+  document.getElementById('status-filter-form').addEventListener('submit', function () {
+    document.querySelectorAll('.floating-status-filter').forEach(f => f.classList.remove('show'));
+  });
   </script>
   
