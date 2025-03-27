@@ -100,23 +100,19 @@ def project_delete(request, project_id):
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
 
-    # Get filters from query params
-    selected_statuses = request.GET.getlist('status')
+    selected_statuses = [s.lower() for s in request.GET.getlist('status')]
     show_closed = request.GET.get('show_closed') == '1'
-    status_options = ['New', 'In Progress', 'Completed', 'Cancelled']
 
-    # Determine filtering strategy
+    # Normalize possible statuses (update these to match DB values)
+    status_options = ['new', 'in progress', 'completed', 'cancelled']
+
     if selected_statuses:
-        # User selected specific statuses
         status_filter = Q(status__in=selected_statuses)
     elif show_closed:
-        # Show all statuses
-        status_filter = Q()  # No filtering
+        status_filter = Q()  # All statuses
     else:
-        # Default: hide completed & cancelled
-        status_filter = ~Q(status__in=["Completed", "Cancelled"])
+        status_filter = ~Q(status__in=["completed", "cancelled"])
 
-    # Query items
     tasks = Item.objects.filter(project=project, item_type='task').filter(status_filter)
     sub_projects = Item.objects.filter(project=project, item_type='sub_project').filter(status_filter)
     activities = Item.objects.filter(project=project, item_type='activity').filter(status_filter)
@@ -131,6 +127,10 @@ def project_detail(request, project_id):
         "status_options": status_options,
     }
     return render(request, "project_detail.html", context)
+
+
+
+
 
 
 
