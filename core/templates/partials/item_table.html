@@ -15,10 +15,10 @@
                 {% for status in status_options %}
                 <div class="form-check">
                   <input class="form-check-input" type="checkbox" name="status" value="{{ status }}"
-                         id="status-{{ item_type }}-{{ forloop.counter }}"
-                         {% if status in selected_statuses or not selected_statuses %}checked{% endif %}>
+                        id="status-{{ item_type }}-{{ forloop.counter }}"
+                        {% if status in selected_statuses %}checked{% endif %}>
                   <label class="form-check-label" for="status-{{ item_type }}-{{ forloop.counter }}">
-                    {{ status|title }}
+                    {{ status }}
                   </label>
                 </div>
                 {% endfor %}
@@ -34,14 +34,26 @@
         <tbody>
           {% for item in items %}
           <tr>
-            <td>{{ item.description|default:"—" }}</td>
-            <td>{{ item.created_date|date:"Y-m-d" }}</td>
+            <td>{{ item.short_description|default:"—" }}</td>
+            <td>{{ item.date_created|date:"Y-m-d" }}</td>
             <td>{{ item.due_date|date:"Y-m-d" }}</td>
             <td>{{ item.status|title }}</td>
             <td>{{ item.priority|title }}</td>
             <td>{{ item.next_step_owner|default:"—" }}</td>
-            <td>{{ item.last_update|date:"Y-m-d" }}</td>
-            <td>{{ item.last_update_text|default:"—" }}</td>
+            <td>
+              {% if item.updates and item.updates|length > 0 %}
+                {{ item.updates|last.timestamp|date:"Y-m-d H:i" }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td>
+              {% if item.updates and item.updates|length > 0 %}
+                {{ item.updates|last.text }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
           </tr>
           {% empty %}
           <tr>
@@ -69,7 +81,6 @@
     });
   });
   
-  // Close floating filter on submit
   document.getElementById('status-filter-form').addEventListener('submit', function () {
     document.querySelectorAll('.floating-status-filter').forEach(f => f.classList.remove('show'));
   });
