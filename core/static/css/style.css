@@ -126,29 +126,35 @@ h1, h2, h3, h4 {
 }
 
 /* ------------------------
-   Dropdowns (Status Filters)
+   Dropdowns (Floating Status Filters)
 ------------------------- */
-.dropdown-menu {
-    background-color: #ede7f6;
+.floating-status-filter {
+    position: absolute;
+    z-index: 9999;
+    top: 120%;
+    left: 0;
+    background-color: #ffffff;
     border: 1px solid #d1c4e9;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 240px;
     max-height: 300px;
     overflow-y: auto;
+    display: none;
 }
 
-.status-filter-dropdown .form-check {
+.floating-status-filter.show {
+    display: block;
+}
+
+.floating-status-filter .form-check {
     margin-bottom: 0.5rem;
 }
 
-.dropdown-item {
-    color: #4a148c;
-}
-
-.dropdown-item:hover {
-    background-color: #d1c4e9;
-    color: #4a148c;
-}
-
-/* Night Mode */
+/* ------------------------
+   Night Mode
+------------------------- */
 body.night-mode {
     background-color: #121212;
     color: #e0e0e0;
