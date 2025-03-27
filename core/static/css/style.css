@@ -155,3 +155,30 @@ body.night-mode .dropdown-item {
 body.night-mode .dropdown-item:hover {
     background-color: #4527a0;
 }
+.dropdown-menu {
+    background-color: #ede7f6;
+    border: 1px solid #d1c4e9;
+}
+
+.dropdown-item {
+    color: #4a148c;
+}
+
+.dropdown-item:hover {
+    background-color: #d1c4e9;
+    color: #4a148c;
+}
+
+/* For night mode */
+body.night-mode .dropdown-menu {
+    background-color: #2c2c2c;
+    color: white;
+}
+
+body.night-mode .dropdown-item {
+    color: white;
+}
+
+body.night-mode .dropdown-item:hover {
+    background-color: #4527a0;
+}

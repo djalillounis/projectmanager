@@ -7,6 +7,7 @@ from django.views.decorators.http import require_POST
 from core.models import Project, Item , Contact
 from core.forms import ProjectForm, ContactForm
 from datetime import date
+from django.db.models import Q
 
 @login_required
 def dashboard(request):
@@ -96,20 +97,24 @@ def project_delete(request, project_id):
 @login_required
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
-    tasks = Item.objects.filter(project=project, item_type="task")
-    sub_projects = Item.objects.filter(project=project, item_type="sub_project")
-    activities = Item.objects.filter(project=project, item_type="activity")
-    contacts = project.contacts.all()
-    contact_form = ContactForm()
-    context = {
-        'project': project,
-        'tasks': tasks,
-        'sub_projects': sub_projects,
-        'activities': activities,
-        'contacts': contacts,
-        'contact_form': contact_form,
-    }
-    return render(request, 'project_detail.html', context)
+    show_closed = request.GET.get('show_closed') == '1'
+
+    if show_closed:
+        tasks = project.item_set.filter(item_type='task')
+        sub_projects = project.item_set.filter(item_type='sub_project')
+        activities = project.item_set.filter(item_type='activity')
+    else:
+        tasks = project.item_set.filter(item_type='task').exclude(status__in=["Completed", "Cancelled"])
+        sub_projects = project.item_set.filter(item_type='sub_project').exclude(status__in=["Completed", "Cancelled"])
+        activities = project.item_set.filter(item_type='activity').exclude(status__in=["Completed", "Cancelled"])
+
+    return render(request, "project_detail.html", {
+        "project": project,
+        "tasks": tasks,
+        "sub_projects": sub_projects,
+        "activities": activities,
+        "show_closed": show_closed,
+    })
 
 
 @require_POST
