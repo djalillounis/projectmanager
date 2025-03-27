@@ -7,7 +7,7 @@ register = template.Library()
 def format_iso(value):
     """
     Converts an ISO datetime string or a datetime object to the format:
-    'dd-MMM-yy HHHi', e.g., '01-Jan-25 13H00'
+    'dd-MMM-YYYY HH:MM', e.g., '24-Mar-2025 10:32'
     """
     try:
         if isinstance(value, str):
@@ -18,9 +18,6 @@ def format_iso(value):
             dt = value
         else:
             return value
-        return dt.strftime("%d-%b-%y %H\\H%M")
+        return dt.strftime("%d-%b-%Y %H:%M")
     except Exception:
         return value
-@register.filter(name='add_class')
-def add_class(field, css_class):
-    return field.as_widget(attrs={"class": css_class})
