@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import json
 from django.views.decorators.http import require_POST
-from core.models import Project, Item , Contact
+from core.models import Project, Item, Contact
 from core.forms import ProjectForm, ContactForm
 from datetime import date
 from django.db.models import Q
@@ -21,15 +21,15 @@ def project_list(request):
     today = date.today()
 
     for project in projects:
-        project.task_count = project.item_set.filter(item_type='task').count()
-        project.subproject_count = project.item_set.filter(item_type='sub_project').count()
-        project.activity_count = project.item_set.filter(item_type='activity').count()
-        project.overdue_count = project.item_set.filter(
+        project.task_count = Item.objects.filter(project=project, item_type='task').count()
+        project.subproject_count = Item.objects.filter(project=project, item_type='sub_project').count()
+        project.activity_count = Item.objects.filter(project=project, item_type='activity').count()
+        project.overdue_count = Item.objects.filter(
+            project=project,
             due_date__lt=today
         ).exclude(status='completed').count()
 
     return render(request, 'project_list.html', {'projects': projects})
-
 
 
 @login_required
@@ -55,7 +55,7 @@ def project_create(request):
                             email=email,
                             phone=phone,
                             role=role,
-                            contact_type='external'  # default; or change based on UI later
+                            contact_type='external'
                         )
             except json.JSONDecodeError:
                 messages.warning(request, "Some contacts could not be processed.")
@@ -65,6 +65,7 @@ def project_create(request):
     else:
         form = ProjectForm()
     return render(request, 'project_create.html', {'form': form})
+
 
 @login_required
 def project_edit(request, project_id):
@@ -100,13 +101,13 @@ def project_detail(request, project_id):
     show_closed = request.GET.get('show_closed') == '1'
 
     if show_closed:
-        tasks = project.item_set.filter(item_type='task')
-        sub_projects = project.item_set.filter(item_type='sub_project')
-        activities = project.item_set.filter(item_type='activity')
+        tasks = Item.objects.filter(project=project, item_type='task')
+        sub_projects = Item.objects.filter(project=project, item_type='sub_project')
+        activities = Item.objects.filter(project=project, item_type='activity')
     else:
-        tasks = project.item_set.filter(item_type='task').exclude(status__in=["Completed", "Cancelled"])
-        sub_projects = project.item_set.filter(item_type='sub_project').exclude(status__in=["Completed", "Cancelled"])
-        activities = project.item_set.filter(item_type='activity').exclude(status__in=["Completed", "Cancelled"])
+        tasks = Item.objects.filter(project=project, item_type='task').exclude(status__in=["Completed", "Cancelled"])
+        sub_projects = Item.objects.filter(project=project, item_type='sub_project').exclude(status__in=["Completed", "Cancelled"])
+        activities = Item.objects.filter(project=project, item_type='activity').exclude(status__in=["Completed", "Cancelled"])
 
     return render(request, "project_detail.html", {
         "project": project,
