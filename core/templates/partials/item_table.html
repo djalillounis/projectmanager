@@ -1,0 +1,35 @@
+{% if items %}
+<div class="table-responsive">
+  <table class="table table-striped table-hover align-middle">
+    <thead>
+      <tr>
+        <th scope="col">Description</th>
+        <th scope="col">Created Date</th>
+        <th scope="col">Due Date</th>
+        <th scope="col">Status</th>
+        <th scope="col">Priority</th>
+        <th scope="col">Next Step Owner</th>
+        <th scope="col">Last Update</th>
+        <th scope="col">Last Update Text</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% now "Y-m-d" as today %}
+      {% for item in items %}
+      <tr{% if item.due_date and item.due_date|date:"Y-m-d" < today and item.status != "Completed" and item.status != "Cancelled" %} class="table-danger"{% endif %}>
+        <td>{{ item.description }}</td>
+        <td>{{ item.created_date|date:"Y-m-d" }}</td>
+        <td>{{ item.due_date|date:"Y-m-d" }}</td>
+        <td>{{ item.status }}</td>
+        <td>{{ item.priority }}</td>
+        <td>{{ item.next_step_owner }}</td>
+        <td>{{ item.last_update|date:"Y-m-d" }}</td>
+        <td>{{ item.last_update_text }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="text-muted text-center">No items available.</p>
+{% endif %}
