@@ -96,26 +96,38 @@ def project_delete(request, project_id):
 
 
 @login_required
+@login_required
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
-    show_closed = request.GET.get('show_closed') == '1'
 
-    if show_closed:
+    # Read from GET params
+    show_closed = request.GET.get('show_closed') == '1'
+    selected_statuses = request.GET.getlist('status')
+
+    # If user didn't pick filters manually, default to hiding closed/cancelled unless show_closed=1
+    if not selected_statuses and not show_closed:
+        excluded_statuses = ["Completed", "Cancelled"]
+        tasks = Item.objects.filter(project=project, item_type='task').exclude(status__in=excluded_statuses)
+        sub_projects = Item.objects.filter(project=project, item_type='sub_project').exclude(status__in=excluded_statuses)
+        activities = Item.objects.filter(project=project, item_type='activity').exclude(status__in=excluded_statuses)
+    elif selected_statuses:
+        tasks = Item.objects.filter(project=project, item_type='task', status__in=selected_statuses)
+        sub_projects = Item.objects.filter(project=project, item_type='sub_project', status__in=selected_statuses)
+        activities = Item.objects.filter(project=project, item_type='activity', status__in=selected_statuses)
+    else:
         tasks = Item.objects.filter(project=project, item_type='task')
         sub_projects = Item.objects.filter(project=project, item_type='sub_project')
         activities = Item.objects.filter(project=project, item_type='activity')
-    else:
-        tasks = Item.objects.filter(project=project, item_type='task').exclude(status__in=["Completed", "Cancelled"])
-        sub_projects = Item.objects.filter(project=project, item_type='sub_project').exclude(status__in=["Completed", "Cancelled"])
-        activities = Item.objects.filter(project=project, item_type='activity').exclude(status__in=["Completed", "Cancelled"])
 
-    return render(request, "project_detail.html", {
+    context = {
         "project": project,
         "tasks": tasks,
         "sub_projects": sub_projects,
         "activities": activities,
         "show_closed": show_closed,
-    })
+        "selected_statuses": selected_statuses,
+    }
+    return render(request, "project_detail.html", context)
 
 
 @require_POST
