@@ -3,11 +3,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.utils.timezone import now
 import json
+import os
+from django.conf import settings
 
 from core.models import Item, Project
 from core.forms import ItemForm
-
 
 @login_required
 def item_create(request, project_id):
@@ -28,14 +30,48 @@ def item_create(request, project_id):
 @login_required
 def item_edit(request, item_id):
     item = get_object_or_404(Item, id=item_id)
+
     if request.method == 'POST':
         form = ItemForm(request.POST, instance=item)
         if form.is_valid():
-            form.save()
+            item = form.save(commit=False)
+
+            # Handle update comment
+            comment = request.POST.get("update_comment", "").strip()
+            update_file = request.FILES.get("update_file")
+
+            update_entry = None
+
+            if comment or update_file:
+                update_entry = {
+                    "timestamp": now().isoformat(),
+                    "comment": comment,
+                }
+
+                # Save the uploaded file if provided
+                if update_file:
+                    upload_dir = os.path.join(settings.MEDIA_ROOT, "updates")
+                    os.makedirs(upload_dir, exist_ok=True)
+                    file_path = os.path.join(upload_dir, update_file.name)
+
+                    with open(file_path, 'wb+') as destination:
+                        for chunk in update_file.chunks():
+                            destination.write(chunk)
+
+                    update_entry["file"] = f"/media/updates/{update_file.name}"
+
+                # Append update to item.updates list
+                if not item.updates:
+                    item.updates = []
+
+                item.updates.append(update_entry)
+
+            item.save()
             messages.success(request, "Item updated successfully!")
             return redirect('project_detail', project_id=item.project.id)
     else:
         form = ItemForm(instance=item)
+
     return render(request, 'item_edit.html', {'form': form, 'item': item})
 
 
