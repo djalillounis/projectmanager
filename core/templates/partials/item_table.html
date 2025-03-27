@@ -41,18 +41,18 @@
             <td>{{ item.priority|title }}</td>
             <td>{{ item.next_step_owner|default:"—" }}</td>
             <td>
-              {% if item.updates and item.updates|length > 0 %}
-                {{ item.updates|last.timestamp|date:"Y-m-d H:i" }}
-              {% else %}
-                —
-              {% endif %}
+              {% with last_update=item.updates|last %}
+                {% if last_update.timestamp %}
+                  {{ last_update.timestamp|date:"Y-m-d H:i" }}
+                {% else %}
+                  —
+                {% endif %}
+              {% endwith %}
             </td>
             <td>
-              {% if item.updates and item.updates|length > 0 %}
-                {{ item.updates|last.text }}
-              {% else %}
-                —
-              {% endif %}
+              {% with last_update=item.updates|last %}
+                {{ last_update.text|default:"—" }}
+              {% endwith %}
             </td>
           </tr>
           {% empty %}
