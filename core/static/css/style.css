@@ -199,3 +199,9 @@ body.night-mode .dropdown-item {
 body.night-mode .dropdown-item:hover {
     background-color: #4527a0;
 }
+/* Filter Dropdown Fix */
+.status-filter-dropdown {
+    max-height: 220px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
