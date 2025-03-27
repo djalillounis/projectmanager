@@ -14,7 +14,6 @@ def dashboard(request):
     projects = Project.objects.all()
     return render(request, 'project_list.html', {'projects': projects})
 
-
 @login_required
 def project_list(request):
     projects = Project.objects.all()
@@ -31,7 +30,6 @@ def project_list(request):
 
     return render(request, 'project_list.html', {'projects': projects})
 
-
 @login_required
 def project_create(request):
     if request.method == 'POST':
@@ -39,7 +37,6 @@ def project_create(request):
         if form.is_valid():
             project = form.save()
 
-            # Handle contacts JSON
             contacts_json = request.POST.get('contacts_json', '[]')
             try:
                 contacts_data = json.loads(contacts_json)
@@ -66,7 +63,6 @@ def project_create(request):
         form = ProjectForm()
     return render(request, 'project_create.html', {'form': form})
 
-
 @login_required
 def project_edit(request, project_id):
     project = get_object_or_404(Project, id=project_id)
@@ -79,7 +75,6 @@ def project_edit(request, project_id):
     else:
         form = ProjectForm(instance=project)
     return render(request, 'project_edit.html', {'form': form, 'project': project})
-
 
 @login_required
 def project_delete(request, project_id):
@@ -94,28 +89,35 @@ def project_delete(request, project_id):
             messages.error(request, "Project name does not match. Deletion canceled.")
     return render(request, 'project_delete.html', {'project': project})
 
-
-
 @login_required
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
 
     selected_statuses = [s.lower() for s in request.GET.getlist('status')]
     show_closed = request.GET.get('show_closed') == '1'
-
-    # Normalize possible statuses (update these to match DB values)
     status_options = ['new', 'in progress', 'completed', 'cancelled']
 
     if selected_statuses:
         status_filter = Q(status__in=selected_statuses)
     elif show_closed:
-        status_filter = Q()  # All statuses
+        status_filter = Q()
     else:
         status_filter = ~Q(status__in=["completed", "cancelled"])
 
     tasks = Item.objects.filter(project=project, item_type='task').filter(status_filter)
     sub_projects = Item.objects.filter(project=project, item_type='sub_project').filter(status_filter)
     activities = Item.objects.filter(project=project, item_type='activity').filter(status_filter)
+
+    # Attach last update info
+    for group in [tasks, sub_projects, activities]:
+        for item in group:
+            if item.updates:
+                last = item.updates[-1]
+                item.last_update = last.get('timestamp')
+                item.last_update_text = last.get('text')
+            else:
+                item.last_update = None
+                item.last_update_text = None
 
     context = {
         "project": project,
@@ -127,13 +129,6 @@ def project_detail(request, project_id):
         "status_options": status_options,
     }
     return render(request, "project_detail.html", context)
-
-
-
-
-
-
-
 
 @require_POST
 @login_required
