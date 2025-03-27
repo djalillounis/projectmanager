@@ -95,29 +95,31 @@ def project_delete(request, project_id):
     return render(request, 'project_delete.html', {'project': project})
 
 
-@login_required
 
+@login_required
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
 
-    show_closed = request.GET.get('show_closed') == '1'
+    # Get filters from query params
     selected_statuses = request.GET.getlist('status')
-
+    show_closed = request.GET.get('show_closed') == '1'
     status_options = ['New', 'In Progress', 'Completed', 'Cancelled']
 
-    if not selected_statuses and not show_closed:
-        excluded_statuses = ["Completed", "Cancelled"]
-        tasks = Item.objects.filter(project=project, item_type='task').exclude(status__in=excluded_statuses)
-        sub_projects = Item.objects.filter(project=project, item_type='sub_project').exclude(status__in=excluded_statuses)
-        activities = Item.objects.filter(project=project, item_type='activity').exclude(status__in=excluded_statuses)
-    elif selected_statuses:
-        tasks = Item.objects.filter(project=project, item_type='task', status__in=selected_statuses)
-        sub_projects = Item.objects.filter(project=project, item_type='sub_project', status__in=selected_statuses)
-        activities = Item.objects.filter(project=project, item_type='activity', status__in=selected_statuses)
+    # Determine filtering strategy
+    if selected_statuses:
+        # User selected specific statuses
+        status_filter = Q(status__in=selected_statuses)
+    elif show_closed:
+        # Show all statuses
+        status_filter = Q()  # No filtering
     else:
-        tasks = Item.objects.filter(project=project, item_type='task')
-        sub_projects = Item.objects.filter(project=project, item_type='sub_project')
-        activities = Item.objects.filter(project=project, item_type='activity')
+        # Default: hide completed & cancelled
+        status_filter = ~Q(status__in=["Completed", "Cancelled"])
+
+    # Query items
+    tasks = Item.objects.filter(project=project, item_type='task').filter(status_filter)
+    sub_projects = Item.objects.filter(project=project, item_type='sub_project').filter(status_filter)
+    activities = Item.objects.filter(project=project, item_type='activity').filter(status_filter)
 
     context = {
         "project": project,
@@ -129,6 +131,9 @@ def project_detail(request, project_id):
         "status_options": status_options,
     }
     return render(request, "project_detail.html", context)
+
+
+
 
 @require_POST
 @login_required
