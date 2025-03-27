@@ -41,8 +41,16 @@
           <td>{{ item.status|title }}</td>
           <td>{{ item.priority|title }}</td>
           <td>{{ item.next_step_owner|default:"—" }}</td>
-          <td>{{ item.last_update|format_iso|default:"—" }}</td>
-          <td>{{ item.last_update_text|default:"—" }}</td>
+          <td>
+            {% with item.updates|last as last_update %}
+              {{ last_update.timestamp|format_iso|default:"—" }}
+            {% endwith %}
+          </td>
+          <td>
+            {% with item.updates|last as last_update %}
+              {{ last_update.text|default:"—" }}
+            {% endwith %}
+          </td>
         </tr>
         {% empty %}
         <tr>
@@ -55,32 +63,29 @@
 </form>
 
 <script>
-// Toggle floating filter
-document.querySelectorAll('.filter-toggle').forEach(button => {
-  button.addEventListener('click', function (e) {
-    const filter = this.nextElementSibling;
-    document.querySelectorAll('.floating-status-filter').forEach(f => f.classList.remove('show'));
-    filter.classList.add('show');
+  document.querySelectorAll('.filter-toggle').forEach(button => {
+    button.addEventListener('click', function (e) {
+      const filter = this.nextElementSibling;
+      document.querySelectorAll('.floating-status-filter').forEach(f => f.classList.remove('show'));
+      filter.classList.add('show');
 
-    document.addEventListener('click', function handler(ev) {
-      if (!filter.contains(ev.target) && !button.contains(ev.target)) {
-        filter.classList.remove('show');
-        document.removeEventListener('click', handler);
-      }
+      document.addEventListener('click', function handler(ev) {
+        if (!filter.contains(ev.target) && !button.contains(ev.target)) {
+          filter.classList.remove('show');
+          document.removeEventListener('click', handler);
+        }
+      });
     });
   });
-});
 
-// Close on Apply
-document.getElementById('status-filter-form').addEventListener('submit', function () {
-  document.querySelectorAll('.floating-status-filter').forEach(f => f.classList.remove('show'));
-});
-
-// Clickable rows
-document.querySelectorAll('.clickable-row').forEach(row => {
-  row.addEventListener('click', () => {
-    const href = row.getAttribute('data-href');
-    if (href) window.location.href = href;
+  document.getElementById('status-filter-form').addEventListener('submit', function () {
+    document.querySelectorAll('.floating-status-filter').forEach(f => f.classList.remove('show'));
   });
-});
+
+  // Make table row clickable
+  document.querySelectorAll('.clickable-row').forEach(row => {
+    row.addEventListener('click', function () {
+      window.location.href = this.dataset.href;
+    });
+  });
 </script>
