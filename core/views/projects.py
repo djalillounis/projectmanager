@@ -96,15 +96,15 @@ def project_delete(request, project_id):
 
 
 @login_required
-@login_required
+
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
 
-    # Read from GET params
     show_closed = request.GET.get('show_closed') == '1'
     selected_statuses = request.GET.getlist('status')
 
-    # If user didn't pick filters manually, default to hiding closed/cancelled unless show_closed=1
+    status_options = ['New', 'In Progress', 'Completed', 'Cancelled']
+
     if not selected_statuses and not show_closed:
         excluded_statuses = ["Completed", "Cancelled"]
         tasks = Item.objects.filter(project=project, item_type='task').exclude(status__in=excluded_statuses)
@@ -126,9 +126,9 @@ def project_detail(request, project_id):
         "activities": activities,
         "show_closed": show_closed,
         "selected_statuses": selected_statuses,
+        "status_options": status_options,
     }
     return render(request, "project_detail.html", context)
-
 
 @require_POST
 @login_required
