@@ -1,0 +1,33 @@
+<div class="col-md-4 mb-3 contact-card" id="contact-{{ contact.id }}">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title d-flex justify-content-between">
+          {{ contact.name }}
+          <i class="bi bi-pencil-square text-muted edit-contact-btn" data-id="{{ contact.id }}" style="cursor: pointer;"></i>
+        </h5>
+        <p class="card-text mb-0"><strong>Type:</strong> {{ contact.contact_type|title }}</p>
+        <p class="card-text mb-0"><strong>Role:</strong> {{ contact.role }}</p>
+        <p class="card-text mb-0"><strong>Email:</strong> {{ contact.email }}</p>
+        <p class="card-text"><strong>Phone:</strong> {{ contact.phone }}</p>
+  
+        <!-- Hidden edit panel -->
+        <div class="edit-contact-panel d-none mt-3">
+          <form class="edit-contact-form" data-id="{{ contact.id }}">
+            {% csrf_token %}
+            <input type="text" name="name" class="form-control mb-2" value="{{ contact.name }}">
+            <input type="email" name="email" class="form-control mb-2" value="{{ contact.email }}">
+            <input type="text" name="phone" class="form-control mb-2" value="{{ contact.phone }}">
+            <input type="text" name="role" class="form-control mb-2" value="{{ contact.role }}">
+            <select name="contact_type" class="form-control mb-2">
+              <option value="internal" {% if contact.contact_type == 'internal' %}selected{% endif %}>Internal</option>
+              <option value="external" {% if contact.contact_type == 'external' %}selected{% endif %}>External</option>
+            </select>
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-sm btn-success">Save</button>
+              <button type="button" class="btn btn-sm btn-danger delete-contact-btn">Delete</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
