@@ -11,7 +11,6 @@ from django.conf import settings
 from core.models import Item, Project
 from core.forms import ItemForm
 
-
 @login_required
 def item_create(request, project_id):
     project = get_object_or_404(Project, id=project_id)
@@ -40,6 +39,7 @@ def item_edit(request, item_id):
         "priority": item.priority,
         "owner": item.owner,
         "next_step_owner": item.next_step_owner,
+        "next_step": item.next_step,
     }
 
     if request.method == 'POST':
@@ -55,10 +55,9 @@ def item_edit(request, item_id):
             update_file = request.FILES.get("update_file")
             change_notes = []
 
-            # Compare changes
             for field, old_value in original_data.items():
-                new_value = str(getattr(item, field))
-                if new_value != old_value:
+                new_value = str(getattr(item, field) or "")
+                if new_value != str(old_value or ""):
                     label = field.replace('_', ' ').capitalize()
                     change_notes.append(f"{label} changed from '{old_value}' to '{new_value}'")
 

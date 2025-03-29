@@ -57,6 +57,12 @@
           <label for="id_next_step_owner" class="form-label">Next Step Owner</label>
           {{ form.next_step_owner }}
         </div>
+
+        <!-- Next Step -->
+        <div class="mb-3">
+          <label for="id_next_step" class="form-label">Next Step</label>
+          {{ form.next_step }}
+        </div>
       </div>
       
       <!-- Right Column: Update & File Upload Section -->
@@ -94,9 +100,7 @@
                 <td>
                   {% if update.file %}
                     <a href="{{ update.file }}" target="_blank">View File</a>
-                    <!-- Link to delete the file from this update -->
-                    <a href="{% url 'delete_item_file' item.id update.timestamp %}"
-                       class="btn btn-danger btn-sm ms-2">
+                    <a href="{% url 'delete_item_file' item.id update.timestamp %}" class="btn btn-danger btn-sm ms-2">
                       Delete File
                     </a>
                   {% else %}

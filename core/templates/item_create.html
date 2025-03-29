@@ -23,7 +23,7 @@
             </div>
         </div>
         
-        <!-- Due Date (HTML5 date picker) -->
+        <!-- Due Date -->
         <div class="row mb-3">
             <label for="id_due_date" class="col-sm-2 col-form-label">Due Date</label>
             <div class="col-sm-10">
@@ -62,10 +62,17 @@
                 {{ form.next_step_owner }}
             </div>
         </div>
+
+        <!-- Next Step -->
+        <div class="row mb-3">
+            <label for="id_next_step" class="col-sm-2 col-form-label">Next Step</label>
+            <div class="col-sm-10">
+                {{ form.next_step }}
+            </div>
+        </div>
         
         <button type="submit" class="btn btn-primary">Create Item</button>
         <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary ms-2">Cancel</a>
     </form>
 </div>
 {% endblock %}
-

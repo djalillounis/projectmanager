@@ -6,14 +6,17 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ['name', 'description', 'logo']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Enter project description'}),
+        }
 
 
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ['item_type', 'short_description', 'due_date', 'status', 'priority', 'owner', 'next_step_owner']
+        fields = ['item_type', 'short_description', 'due_date', 'status', 'priority', 'owner', 'next_step_owner', 'next_step']
         widgets = {
-            'due_date': forms.DateInput(attrs={'type': 'date'})
+            'next_step': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Describe the next step'}),
         }
 
 

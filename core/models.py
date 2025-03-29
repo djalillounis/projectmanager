@@ -25,7 +25,7 @@ class Item(models.Model):
     PRIORITY_CHOICES = [
         ('high', 'High'),
         ('medium', 'Medium'),
-        ('low', 'Low'),
+        ('low', 'Low'),0
     ]
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='items')
