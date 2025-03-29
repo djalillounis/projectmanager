@@ -1,11 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
     const contactForm = document.getElementById("contact-form");
+  
     if (contactForm) {
       contactForm.addEventListener("submit", function (e) {
         e.preventDefault();
         const formData = new FormData(this);
   
-        fetch(this.getAttribute("action") || window.location.pathname + "contacts/add/", {
+        fetch("{% url 'add_contact' project.id %}", {
           method: "POST",
           headers: { "X-CSRFToken": getCookie("csrftoken") },
           body: formData
