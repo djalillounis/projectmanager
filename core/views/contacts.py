@@ -27,3 +27,15 @@ def delete_contact(request, contact_id):
     contact = get_object_or_404(Contact, id=contact_id)
     contact.delete()
     return JsonResponse({'success': True})
+
+
+@require_POST
+@login_required
+def update_contact(request, contact_id):
+    contact = get_object_or_404(Contact, id=contact_id)
+    form = ContactForm(request.POST, instance=contact)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False, 'errors': form.errors})

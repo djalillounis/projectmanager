@@ -61,17 +61,38 @@
         <div class="col-md-4 mb-3" id="contact-{{ contact.id }}">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">{{ contact.name }}</h5>
-              <p class="card-text">
-                <strong>Type:</strong> {{ contact.contact_type|title }}<br>
-                <strong>Role:</strong> {{ contact.role }}<br>
-                <strong>Email:</strong> {{ contact.email }}<br>
-                <strong>Phone:</strong> {{ contact.phone }}
-              </p>
-              <button class="btn btn-sm btn-danger" onclick="deleteContact({{ contact.id }})">Delete</button>
+              <form class="contact-edit-form" data-id="{{ contact.id }}">
+                <div class="form-group mb-2">
+                  <label class="form-label">Name</label>
+                  <input type="text" name="name" class="form-control" value="{{ contact.name }}">
+                </div>
+                <div class="form-group mb-2">
+                  <label class="form-label">Email</label>
+                  <input type="email" name="email" class="form-control" value="{{ contact.email }}">
+                </div>
+                <div class="form-group mb-2">
+                  <label class="form-label">Phone</label>
+                  <input type="text" name="phone" class="form-control" value="{{ contact.phone }}">
+                </div>
+                <div class="form-group mb-2">
+                  <label class="form-label">Role</label>
+                  <input type="text" name="role" class="form-control" value="{{ contact.role }}">
+                </div>
+                <div class="form-group mb-3">
+                  <label class="form-label">Type</label>
+                  <select name="contact_type" class="form-control">
+                    <option value="internal" {% if contact.contact_type == 'internal' %}selected{% endif %}>Internal</option>
+                    <option value="external" {% if contact.contact_type == 'external' %}selected{% endif %}>External</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-sm btn-success me-2">Save</button>
+                <button type="button" class="btn btn-sm btn-danger" onclick="deleteContact({{ contact.id }})">Delete</button>
+              </form>
             </div>
           </div>
         </div>
+        
+             
         {% endfor %}
       </div>
 
@@ -189,5 +210,27 @@ function getCookie(name) {
   }
   return cookieValue;
 }
+
+document.querySelectorAll(".contact-edit-form").forEach(form => {
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const contactId = form.dataset.id;
+    const formData = new FormData(form);
+
+    fetch(`/contacts/${contactId}/update/`, {
+      method: "POST",
+      headers: { "X-CSRFToken": getCookie("csrftoken") },
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Contact updated.");
+      } else {
+        alert("Error: " + JSON.stringify(data.errors));
+      }
+    });
+  });
+});
 </script>
 {% endblock %}
