@@ -31,7 +31,7 @@
                    id="status-{{ item_type }}-{{ forloop.counter }}"
                    {% if status in selected_statuses %}checked{% endif %}>
             <label class="form-check-label" for="status-{{ item_type }}-{{ forloop.counter }}">
-              {{ status|replace:"_" " "|title }}
+              {{ status|spaceify }}
             </label>
           </div>
           {% endfor %}
@@ -66,7 +66,7 @@
         <td>{{ item.short_description }}</td>
         <td>{{ item.date_created|format_iso }}</td>
         <td>{{ item.due_date|date:"Y-m-d" }}</td>
-        <td>{{ item.status|replace:"_" " "|title }}</td>
+        <td>{{ item.status|spaceify }}</td>
         <td>{{ item.priority|title }}</td>
         <td>{{ item.next_step_owner }}</td>
         <td>

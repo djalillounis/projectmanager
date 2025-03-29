@@ -21,3 +21,10 @@ def format_iso(value):
         return dt.strftime("%d-%b-%Y %H:%M")
     except Exception:
         return value
+    
+@register.filter
+def spaceify(value):
+    """Replaces underscores with spaces and capitalizes first letters."""
+    if isinstance(value, str):
+        return value.replace('_', ' ').title()
+    return value
