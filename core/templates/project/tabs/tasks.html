@@ -1,6 +1,15 @@
-<h4>Tasks <a href="{% url 'item_create' project.id %}?item_type=task" class="btn btn-sm btn-secondary ms-2">+</a></h4>
-{% include 'partials/item_table.html' with items=tasks %}
-<h4 class="mt-4">Sub-Projects <a href="{% url 'item_create' project.id %}?item_type=sub_project" class="btn btn-sm btn-secondary ms-2">+</a></h4>
-{% include 'partials/item_table.html' with items=sub_projects %}
-<h4 class="mt-4">Activities <a href="{% url 'item_create' project.id %}?item_type=activity" class="btn btn-sm btn-secondary ms-2">+</a></h4>
-{% include 'partials/item_table.html' with items=activities %}
+<h4>Tasks 
+    <a href="{% url 'item_create' project.id %}?item_type=task" class="btn btn-sm btn-secondary ms-2">+</a>
+  </h4>
+  {% include 'partials/item_table.html' with items=tasks item_type='task' selected_statuses=task_statuses %}
+  
+  <h4 class="mt-4">Sub-Projects 
+    <a href="{% url 'item_create' project.id %}?item_type=sub_project" class="btn btn-sm btn-secondary ms-2">+</a>
+  </h4>
+  {% include 'partials/item_table.html' with items=sub_projects item_type='sub_project' selected_statuses=sub_statuses %}
+  
+  <h4 class="mt-4">Activities 
+    <a href="{% url 'item_create' project.id %}?item_type=activity" class="btn btn-sm btn-secondary ms-2">+</a>
+  </h4>
+  {% include 'partials/item_table.html' with items=activities item_type='activity' selected_statuses=activity_statuses %}
+  

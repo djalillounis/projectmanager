@@ -18,9 +18,9 @@
         <div class="modal-body">
           {% for status in status_options %}
           <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" name="status" value="{{ status|lower|slugify }}"
+            <input class="form-check-input" type="checkbox" name="{{ item_type }}_status" value="{{ status|lower }}"
                    id="status-{{ item_type }}-{{ forloop.counter }}"
-                   {% if status|lower|slugify in selected_statuses %}checked{% endif %}>
+                   {% if status|lower in selected_statuses %}checked{% endif %}>
             <label class="form-check-label" for="status-{{ item_type }}-{{ forloop.counter }}">
               {{ status|title }}
             </label>
@@ -61,19 +61,15 @@
         <td>{{ item.priority|title }}</td>
         <td>{{ item.next_step_owner }}</td>
         <td>
-          {% if item.updates and item.updates|length > 0 %}
-            {% with last=item.updates|last %}
-              {{ last.timestamp|format_iso }}
-            {% endwith %}
+          {% if item.last_update %}
+            {{ item.last_update|format_iso }}
           {% else %}
             &mdash;
           {% endif %}
         </td>
         <td>
-          {% if item.updates and item.updates|length > 0 %}
-            {% with last=item.updates|last %}
-              {{ last.comment|default:"—" }}
-            {% endwith %}
+          {% if item.last_update_text %}
+            {{ item.last_update_text|default:"—" }}
           {% else %}
             &mdash;
           {% endif %}
