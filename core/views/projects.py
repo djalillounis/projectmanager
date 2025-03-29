@@ -76,17 +76,19 @@ def project_edit(request, project_id):
         form = ProjectForm(instance=project)
     return render(request, 'project_edit.html', {'form': form, 'project': project})
 
-@login_required
+login_required
 def project_delete(request, project_id):
     project = get_object_or_404(Project, id=project_id)
+
     if request.method == 'POST':
-        confirm_name = request.POST.get('confirm_name')
-        if confirm_name == project.name:
+        confirm_name = request.POST.get('confirm_name', '').strip()
+        if confirm_name.lower() == project.name.strip().lower():
             project.delete()
             messages.success(request, "Project deleted successfully.")
             return redirect('project_list')
         else:
             messages.error(request, "Project name does not match. Deletion canceled.")
+
     return render(request, 'project_delete.html', {'project': project})
 
 @login_required
