@@ -25,6 +25,7 @@ urlpatterns = [
     # Contact Management
     path('projects/<int:project_id>/contacts/add/', views.add_contact, name='add_contact'),
     path('contacts/<int:contact_id>/delete/', views.delete_contact, name='delete_contact'),
+    path('contacts/<int:contact_id>/update/', views.update_contact, name='update_contact'),  # ✅ NEW
 
     # Auth
     path('logout/', views.custom_logout, name='logout'),
