@@ -137,13 +137,13 @@
     }
     return cookieValue;
   }
-  
+
   // === ADD NEW CONTACT ===
   document.getElementById("contact-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const form = this;
     const formData = new FormData(form);
-  
+
     fetch("{% url 'add_contact' project.id %}", {
       method: "POST",
       headers: { "X-CSRFToken": getCookie("csrftoken") },
@@ -155,23 +155,23 @@
           const temp = document.createElement("div");
           temp.innerHTML = data.contact_html.trim();
           container.prepend(temp.firstElementChild);
-  
+
           form.reset();
-  
+
           const alert = document.createElement("div");
           alert.className = "alert alert-success mt-2";
           alert.innerText = "Contact added successfully!";
           form.prepend(alert);
           setTimeout(() => alert.remove(), 3000);
-  
-          rebindEditEvents();  // Rebind edit events for new contact
+
+          rebindEditEvents();  // Rebind for new contact
         } else {
           alert("Error: " + JSON.stringify(data.errors || "Unexpected error"));
         }
       });
   });
-  
-  // === EDIT CONTACT ===
+
+  // === EDIT / DELETE CONTACT ===
   function rebindEditEvents() {
     document.querySelectorAll(".edit-contact-btn").forEach(btn => {
       btn.onclick = function () {
@@ -180,14 +180,16 @@
         panel.classList.toggle("d-none");
       };
     });
-  
+
     document.querySelectorAll(".edit-contact-form").forEach(form => {
       form.onsubmit = function (e) {
         e.preventDefault();
         const contactId = form.dataset.id;
         const formData = new FormData(form);
-  
-        fetch(`/contacts/update/${contactId}/`, {
+
+        const updateUrl = "{% url 'update_contact' 0 %}".replace("0", contactId);
+
+        fetch(updateUrl, {
           method: "POST",
           headers: { "X-CSRFToken": getCookie("csrftoken") },
           body: formData
@@ -195,7 +197,7 @@
           if (data.success) {
             const panel = form.closest(".edit-contact-panel");
             panel.classList.add("d-none");
-  
+
             const alert = document.createElement("div");
             alert.className = "alert alert-success mt-2";
             alert.innerText = "Contact updated successfully!";
@@ -206,15 +208,15 @@
           }
         });
       };
-  
-      // === DELETE CONTACT from edit panel ===
+
       const deleteBtn = form.querySelector(".delete-contact-btn");
       deleteBtn.onclick = function () {
         const contactId = form.dataset.id;
-  
         if (!confirm("Are you sure you want to delete this contact?")) return;
-  
-        fetch(`/contacts/delete/${contactId}/`, {
+
+        const deleteUrl = "{% url 'delete_contact' 0 %}".replace("0", contactId);
+
+        fetch(deleteUrl, {
           method: "POST",
           headers: { "X-CSRFToken": getCookie("csrftoken") }
         }).then(res => res.json()).then(data => {
@@ -227,7 +229,7 @@
       };
     });
   }
-  
+
   // === PROJECT INFO UPDATE ===
   document.getElementById("project-info-form").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -235,7 +237,7 @@
       name: document.getElementById("project-name").value,
       description: document.getElementById("project-description").value
     };
-  
+
     fetch("{% url 'update_project_info' project.id %}", {
       method: "POST",
       headers: {
@@ -250,8 +252,8 @@
       }
     });
   });
-  
+
   // Initial binding
   rebindEditEvents();
-  </script>
-  {% endblock %}
+</script>
+{% endblock %}
