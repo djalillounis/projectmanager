@@ -10,6 +10,25 @@ import json
 from core.models import Project, Item, Contact
 from core.forms import ProjectForm, ContactForm
 
+
+@login_required
+def project_list(request):
+    """Dashboard-style project list with counts."""
+    projects = Project.objects.all()
+    today = date.today()
+
+    for project in projects:
+        project.task_count = Item.objects.filter(project=project, item_type='task').count()
+        project.subproject_count = Item.objects.filter(project=project, item_type='sub_project').count()
+        project.activity_count = Item.objects.filter(project=project, item_type='activity').count()
+        project.overdue_count = Item.objects.filter(
+            project=project,
+            due_date__lt=today
+        ).exclude(status='completed').count()
+
+    return render(request, 'project/project_list.html', {'projects': projects})
+
+
 @login_required
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
