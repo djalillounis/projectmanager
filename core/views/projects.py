@@ -115,3 +115,17 @@ def project_detail(request, project_id):
         "status_options": ["new", "in progress", "completed", "cancelled"],
     }
     return render(request, "project/project_detail.html", context)
+@require_POST
+@login_required
+def update_project_info(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    data = json.loads(request.body)
+    name = data.get("name", "").strip()
+    description = data.get("description", "").strip()
+
+    if name:
+        project.name = name
+    project.description = description
+    project.save()
+
+    return JsonResponse({'success': True, 'name': project.name})
