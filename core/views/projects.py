@@ -96,7 +96,7 @@ def project_detail(request, project_id):
     selected_statuses = [s.lower() for s in request.GET.getlist('status')]
     show_closed = request.GET.get('show_closed') == '1'
     status_options = ['new', 'in progress', 'completed', 'cancelled']
-
+    contacts = Contact.objects.filter(project=project)
     if selected_statuses:
         status_filter = Q(status__in=selected_statuses)
     elif show_closed:
@@ -124,6 +124,7 @@ def project_detail(request, project_id):
         "tasks": tasks,
         "sub_projects": sub_projects,
         "activities": activities,
+        "contacts": contacts,
         "show_closed": show_closed,
         "selected_statuses": selected_statuses,
         "status_options": status_options,
