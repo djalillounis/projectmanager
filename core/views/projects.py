@@ -112,7 +112,7 @@ def project_detail(request, project_id):
         "task_statuses": task_statuses,
         "sub_statuses": sub_statuses,
         "activity_statuses": activity_statuses,
-        "status_options": Project.STATUS_CHOICES,
+        "status_options": Item.STATUS_CHOICES,
     }
     return render(request, "project/project_detail.html", context)
 @require_POST
