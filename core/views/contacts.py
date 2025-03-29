@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 
 from core.models import Project, Contact
 from core.forms import ContactForm
@@ -16,10 +16,11 @@ def add_contact(request, project_id):
         contact = form.save(commit=False)
         contact.project = project
         contact.save()
-        return JsonResponse({'success': True})
+        # Render the contact card HTML and return it
+        contact_html = render(request, "partials/contact_card.html", {"contact": contact}).content.decode("utf-8")
+        return JsonResponse({'success': True, 'html': contact_html})
     else:
         return JsonResponse({'success': False, 'errors': form.errors})
-
 
 @require_POST
 @login_required
