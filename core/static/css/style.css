@@ -10,9 +10,7 @@ body {
     background-color: #6a1b9a;
 }
 
-.navbar-brand,
-.nav-link,
-.navbar-text {
+.navbar-brand, .nav-link, .navbar-text {
     color: #ffffff !important;
 }
 
@@ -85,17 +83,19 @@ h1, h2, h3, h4 {
     background-color: #ede7f6;
     color: #4a148c;
     border: 1px solid #d1c4e9;
-    margin-right: 2px;
     border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    margin-right: 4px;
 }
 
 .nav-tabs .nav-link.active {
     background-color: #6a1b9a;
     color: #ffffff;
-    border-color: #6a1b9a #6a1b9a #fff;
+    border-color: #6a1b9a #6a1b9a #ffffff;
+    font-weight: bold;
 }
 
-.nav-tabs .nav-link:hover {
+.nav-tabs .nav-link:hover:not(.active) {
     background-color: #d1c4e9;
     color: #4a148c;
 }
@@ -161,18 +161,6 @@ h1, h2, h3, h4 {
 }
 
 /* ------------------------
-   Highlight Rows on Hover
-------------------------- */
-.clickable-row {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.clickable-row:hover {
-    background-color: #f3e5f5 !important;
-}
-
-/* ------------------------
    Night Mode
 ------------------------- */
 body.night-mode {
@@ -200,4 +188,16 @@ body.night-mode .dropdown-item {
 
 body.night-mode .dropdown-item:hover {
     background-color: #4527a0;
+}
+
+/* ------------------------
+   Row Hover Highlight
+------------------------- */
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clickable-row:hover {
+    background-color: #f3e5f5 !important;
 }
