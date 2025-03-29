@@ -38,9 +38,11 @@ class Item(models.Model):
     owner = models.CharField(max_length=100)
     next_step_owner = models.CharField(max_length=100, blank=True)
     updates = models.JSONField(default=list, blank=True)
+    next_step = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.item_type}: {self.short_description}"
+    
 
 
 
