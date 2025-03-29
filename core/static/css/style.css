@@ -10,7 +10,9 @@ body {
     background-color: #6a1b9a;
 }
 
-.navbar-brand, .nav-link, .navbar-text {
+.navbar-brand,
+.nav-link,
+.navbar-text {
     color: #ffffff !important;
 }
 
@@ -79,14 +81,22 @@ h1, h2, h3, h4 {
 /* ------------------------
    Tabs & Tables
 ------------------------- */
-.nav-tabs .nav-link.active {
+.nav-tabs .nav-link {
     background-color: #ede7f6;
-    border-color: #d1c4e9 #d1c4e9 #fff;
     color: #4a148c;
+    border: 1px solid #d1c4e9;
+    margin-right: 2px;
+    border-bottom: none;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #6a1b9a;
+    color: #ffffff;
+    border-color: #6a1b9a #6a1b9a #fff;
 }
 
 .nav-tabs .nav-link:hover {
-    background-color: #f3e5f5;
+    background-color: #d1c4e9;
     color: #4a148c;
 }
 
@@ -128,7 +138,6 @@ h1, h2, h3, h4 {
 /* ------------------------
    Dropdowns (Floating Status Filters)
 ------------------------- */
-/* Floating status filter */
 .floating-status-filter {
     display: none;
     position: absolute;
@@ -142,13 +151,25 @@ h1, h2, h3, h4 {
     padding: 12px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
-/* Show filter dropdown when toggled */
+
 .floating-status-filter.show {
     display: block;
 }
 
 .floating-status-filter .form-check {
     margin-bottom: 0.5rem;
+}
+
+/* ------------------------
+   Highlight Rows on Hover
+------------------------- */
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clickable-row:hover {
+    background-color: #f3e5f5 !important;
 }
 
 /* ------------------------
@@ -180,13 +201,3 @@ body.night-mode .dropdown-item {
 body.night-mode .dropdown-item:hover {
     background-color: #4527a0;
 }
-/* Highlight clickable row on hover */
-.clickable-row {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.clickable-row:hover {
-    background-color: #f3e5f5 !important; /* light purple */
-}
-
