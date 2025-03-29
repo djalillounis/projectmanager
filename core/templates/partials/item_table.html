@@ -1,30 +1,26 @@
 {% load formatting %}
-
-<!-- Filter Modal Trigger -->
+<!-- Filter Button + Modal Trigger -->
 <div class="d-flex justify-content-end mb-2">
-  <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#statusFilterModal">
+  <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#statusFilterModal-{{ item_type }}">
     <i class="bi bi-funnel-fill me-1"></i> Filter Status
   </button>
 </div>
 
 <!-- Filter Modal -->
-<div class="modal fade" id="statusFilterModal" tabindex="-1" aria-labelledby="statusFilterModalLabel" aria-hidden="true">
+<div class="modal fade" id="statusFilterModal-{{ item_type }}" tabindex="-1" aria-labelledby="statusFilterModalLabel-{{ item_type }}" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <form method="get" id="status-filter-form">
+      <form method="get" id="status-filter-form-{{ item_type }}">
         <div class="modal-header">
-          <h5 class="modal-title" id="statusFilterModalLabel">Filter by Status</h5>
+          <h5 class="modal-title" id="statusFilterModalLabel-{{ item_type }}">Filter {{ item_type|title }} by Status</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           {% for status in status_options %}
           <div class="form-check mb-2">
-            <input class="form-check-input"
-                   type="checkbox"
-                   name="status"
-                   value="{{ status }}"
+            <input class="form-check-input" type="checkbox" name="status" value="{{ status|lower|slugify }}"
                    id="status-{{ item_type }}-{{ forloop.counter }}"
-                   {% if status in selected_statuses %}checked{% endif %}>
+                   {% if status|lower|slugify in selected_statuses %}checked{% endif %}>
             <label class="form-check-label" for="status-{{ item_type }}-{{ forloop.counter }}">
               {{ status|title }}
             </label>
