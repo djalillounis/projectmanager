@@ -1,0 +1,25 @@
+<h4 class="mb-3">Project Contacts</h4>
+<div id="contacts-container" class="row">
+  {% for contact in contacts %}
+    {% include "partials/contact_card.html" with contact=contact %}
+  {% endfor %}
+</div>
+<hr>
+<h5>Add New Contact</h5>
+<form id="contact-form">{% csrf_token %}
+  <div class="row">
+    <div class="col-md-4">
+      <input type="text" name="name" placeholder="Name" class="form-control mb-2" required>
+      <input type="email" name="email" placeholder="Email" class="form-control mb-2">
+      <input type="text" name="phone" placeholder="Phone" class="form-control mb-2">
+    </div>
+    <div class="col-md-4">
+      <input type="text" name="role" placeholder="Role" class="form-control mb-2">
+      <select name="contact_type" class="form-control mb-2">
+        <option value="internal">Internal</option>
+        <option value="external" selected>External</option>
+      </select>
+      <button type="submit" class="btn btn-primary">Add Contact</button>
+    </div>
+  </div>
+</form>
