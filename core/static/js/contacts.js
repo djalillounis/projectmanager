@@ -6,34 +6,43 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         const formData = new FormData(this);
   
-        fetch("{% url 'add_contact' project.id %}", {
+        fetch(this.getAttribute("action") || window.location.pathname + "contacts/add/", {
           method: "POST",
           headers: { "X-CSRFToken": getCookie("csrftoken") },
           body: formData
-        }).then(res => res.json())
+        })
+          .then(res => res.json())
           .then(data => {
             if (data.success && data.contact_html) {
+              // Inject contact card
               const container = document.getElementById("contacts-container");
               const temp = document.createElement("div");
               temp.innerHTML = data.contact_html.trim();
               container.prepend(temp.firstElementChild);
+  
+              // Reset form
               contactForm.reset();
   
+              // Success alert
               const alert = document.createElement("div");
-              alert.className = "alert alert-success mt-2";
+              alert.className = "alert alert-success mt-3";
               alert.innerText = "Contact added successfully!";
               contactForm.prepend(alert);
               setTimeout(() => alert.remove(), 3000);
   
-              rebindContactEvents();  // Bind handlers for the new contact
+              // Rebind edit/delete
+              rebindContactEvents();
             } else {
               alert("Error: " + JSON.stringify(data.errors || "Unexpected error"));
             }
+          })
+          .catch(() => {
+            alert("Something went wrong while adding the contact.");
           });
       });
     }
   
-    rebindContactEvents();  // Initial binding
+    rebindContactEvents();
   });
   
   function rebindContactEvents() {
@@ -54,20 +63,22 @@ document.addEventListener("DOMContentLoaded", () => {
           method: "POST",
           headers: { "X-CSRFToken": getCookie("csrftoken") },
           body: formData
-        }).then(res => res.json()).then(data => {
-          if (data.success) {
-            const panel = form.closest(".edit-contact-panel");
-            panel.classList.add("d-none");
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              const panel = form.closest(".edit-contact-panel");
+              panel.classList.add("d-none");
   
-            const alert = document.createElement("div");
-            alert.className = "alert alert-success mt-2";
-            alert.innerText = "Contact updated successfully!";
-            form.parentElement.prepend(alert);
-            setTimeout(() => alert.remove(), 3000);
-          } else {
-            alert("Update failed.");
-          }
-        });
+              const alert = document.createElement("div");
+              alert.className = "alert alert-success mt-2";
+              alert.innerText = "Contact updated successfully!";
+              form.parentElement.prepend(alert);
+              setTimeout(() => alert.remove(), 3000);
+            } else {
+              alert("Update failed.");
+            }
+          });
       };
   
       const deleteBtn = form.querySelector(".delete-contact-btn");
@@ -79,13 +90,15 @@ document.addEventListener("DOMContentLoaded", () => {
           fetch(`/contacts/${contactId}/delete/`, {
             method: "POST",
             headers: { "X-CSRFToken": getCookie("csrftoken") }
-          }).then(res => res.json()).then(data => {
-            if (data.success) {
-              document.getElementById(`contact-${contactId}`).remove();
-            } else {
-              alert("Failed to delete contact.");
-            }
-          });
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                document.getElementById(`contact-${contactId}`).remove();
+              } else {
+                alert("Failed to delete contact.");
+              }
+            });
         };
       }
     });
