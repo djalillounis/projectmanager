@@ -6,6 +6,11 @@ body {
     color: #333;
 }
 
+.modal-body {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
 .navbar {
     background-color: #6a1b9a;
 }
