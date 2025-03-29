@@ -11,6 +11,15 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <form method="get" id="status-filter-form-{{ item_type }}">
+        <!-- ✅ Preserve all filters across forms -->
+        {% for key, value_list in request.GET.lists %}
+          {% for value in value_list %}
+            {% if key != item_type|add:'_status' %}
+              <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+
         <div class="modal-header">
           <h5 class="modal-title" id="statusFilterModalLabel-{{ item_type }}">Filter {{ item_type|title }} by Status</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -18,11 +27,11 @@
         <div class="modal-body">
           {% for status in status_options %}
           <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" name="{{ item_type }}_status" value="{{ status|lower }}"
+            <input class="form-check-input" type="checkbox" name="{{ item_type }}_status" value="{{ status }}"
                    id="status-{{ item_type }}-{{ forloop.counter }}"
-                   {% if status|lower in selected_statuses %}checked{% endif %}>
+                   {% if status in selected_statuses %}checked{% endif %}>
             <label class="form-check-label" for="status-{{ item_type }}-{{ forloop.counter }}">
-              {{ status|title }}
+              {{ status|replace:"_" " "|title }}
             </label>
           </div>
           {% endfor %}
@@ -57,19 +66,23 @@
         <td>{{ item.short_description }}</td>
         <td>{{ item.date_created|format_iso }}</td>
         <td>{{ item.due_date|date:"Y-m-d" }}</td>
-        <td>{{ item.status|title }}</td>
+        <td>{{ item.status|replace:"_" " "|title }}</td>
         <td>{{ item.priority|title }}</td>
         <td>{{ item.next_step_owner }}</td>
         <td>
-          {% if item.last_update %}
-            {{ item.last_update|format_iso }}
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last=item.updates|last %}
+              {{ last.timestamp|format_iso }}
+            {% endwith %}
           {% else %}
             &mdash;
           {% endif %}
         </td>
         <td>
-          {% if item.last_update_text %}
-            {{ item.last_update_text|default:"—" }}
+          {% if item.updates and item.updates|length > 0 %}
+            {% with last=item.updates|last %}
+              {{ last.comment|default:"—" }}
+            {% endwith %}
           {% else %}
             &mdash;
           {% endif %}
