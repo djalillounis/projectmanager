@@ -16,11 +16,12 @@ def add_contact(request, project_id):
         contact = form.save(commit=False)
         contact.project = project
         contact.save()
-        # Render the contact card HTML and return it
-        contact_html = render(request, "partials/contact_card.html", {"contact": contact}).content.decode("utf-8")
-        return JsonResponse({'success': True, 'html': contact_html})
-    else:
-        return JsonResponse({'success': False, 'errors': form.errors})
+
+        # ✅ This is required to return HTML for the new contact
+        contact_html = render_to_string("project/partials/contact_card.html", {"contact": contact})
+        return JsonResponse({'success': True, 'contact_html': contact_html})
+    
+    return JsonResponse({'success': False, 'errors': form.errors})
 
 @require_POST
 @login_required
