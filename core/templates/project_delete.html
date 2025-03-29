@@ -5,17 +5,15 @@
 <div class="container mt-5">
   <h2 class="mb-4">Delete Project: {{ project.name }}</h2>
   <p class="text-danger">
-    Please type the project name <strong>{{ project.name }}</strong> to confirm deletion.
+    Warning: This action cannot be undone. Please type the project name <strong>{{ project.name }}</strong> to confirm deletion.
   </p>
-  
   <form method="post">
     {% csrf_token %}
-    <div class="mb-3">
-      <label for="confirmation" class="form-label">Confirm Project Name</label>
-      <input type="text" name="confirmation" id="confirmation" class="form-control" placeholder="Enter project name">
-    </div>
+    <label for="confirm_name" class="form-label fw-bold">Confirm Project Name</label>
+    <input type="text" name="confirm_name" id="confirm_name" class="form-control mb-3" placeholder="Enter project name">
     <button type="submit" class="btn btn-danger">Delete Project</button>
-    <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary ms-2">Cancel</a>
+    <a href="{% url 'project_detail' project.id %}" class="btn btn-outline-secondary ms-2">Cancel</a>
   </form>
+
 </div>
 {% endblock %}

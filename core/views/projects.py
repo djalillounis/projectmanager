@@ -9,6 +9,7 @@ import json
 
 from core.models import Project, Item, Contact
 from core.forms import ProjectForm, ContactForm
+from django.utils.html import strip_tags
 
 
 @login_required
@@ -84,17 +85,24 @@ def project_edit(request, project_id):
 
 
 @login_required
+
 def project_delete(request, project_id):
     project = get_object_or_404(Project, id=project_id)
 
     if request.method == 'POST':
         confirm_name = request.POST.get('confirm_name', '').strip()
-        if confirm_name.lower() == project.name.strip().lower():
+        actual_name = project.name.strip()
+
+        # Normalize whitespace and case
+        confirm_name_normalized = ' '.join(confirm_name.lower().split())
+        actual_name_normalized = ' '.join(actual_name.lower().split())
+
+        if confirm_name_normalized == actual_name_normalized:
             project.delete()
             messages.success(request, "Project deleted successfully.")
             return redirect('project_list')
         else:
-            messages.error(request, "Project name does not match. Deletion canceled.")
+            messages.error(request, f"Project name does not match. You typed: '{confirm_name}', expected: '{actual_name}'")
 
     return render(request, 'project_delete.html', {'project': project})
 
