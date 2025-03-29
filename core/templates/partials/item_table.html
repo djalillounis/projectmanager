@@ -11,7 +11,6 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <form method="get" id="status-filter-form-{{ item_type }}">
-        <!-- ✅ Preserve all filters across forms -->
         {% for key, value_list in request.GET.lists %}
           {% for value in value_list %}
             {% if key != item_type|add:'_status' %}
@@ -25,13 +24,13 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          {% for status in status_options %}
+          {% for value, label in status_options %}
           <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" name="{{ item_type }}_status" value="{{ status }}"
+            <input class="form-check-input" type="checkbox" name="{{ item_type }}_status" value="{{ value }}"
                    id="status-{{ item_type }}-{{ forloop.counter }}"
-                   {% if status in selected_statuses %}checked{% endif %}>
+                   {% if value in selected_statuses %}checked{% endif %}>
             <label class="form-check-label" for="status-{{ item_type }}-{{ forloop.counter }}">
-              {{ status|spaceify }}
+              {{ label }}
             </label>
           </div>
           {% endfor %}
@@ -66,7 +65,13 @@
         <td>{{ item.short_description }}</td>
         <td>{{ item.date_created|format_iso }}</td>
         <td>{{ item.due_date|date:"Y-m-d" }}</td>
-        <td>{{ item.status|spaceify }}</td>
+        <td>
+          {% for value, label in status_options %}
+            {% if item.status == value %}
+              {{ label }}
+            {% endif %}
+          {% endfor %}
+        </td>
         <td>{{ item.priority|title }}</td>
         <td>{{ item.next_step_owner }}</td>
         <td>

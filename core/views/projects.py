@@ -112,7 +112,7 @@ def project_detail(request, project_id):
         "task_statuses": task_statuses,
         "sub_statuses": sub_statuses,
         "activity_statuses": activity_statuses,
-        "status_options": ["new", "in progress", "completed", "cancelled"],
+        "status_options": Project.STATUS_CHOICES,
     }
     return render(request, "project/project_detail.html", context)
 @require_POST
