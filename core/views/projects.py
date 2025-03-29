@@ -2,17 +2,20 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-import json
 from django.views.decorators.http import require_POST
+from django.db.models import Q
+from datetime import date
+import json
+
 from core.models import Project, Item, Contact
 from core.forms import ProjectForm, ContactForm
-from datetime import date
-from django.db.models import Q
+
 
 @login_required
 def dashboard(request):
     projects = Project.objects.all()
     return render(request, 'project_list.html', {'projects': projects})
+
 
 @login_required
 def project_list(request):
@@ -30,6 +33,7 @@ def project_list(request):
 
     return render(request, 'project_list.html', {'projects': projects})
 
+
 @login_required
 def project_create(request):
     if request.method == 'POST':
@@ -37,6 +41,7 @@ def project_create(request):
         if form.is_valid():
             project = form.save()
 
+            # Optional contacts passed from frontend
             contacts_json = request.POST.get('contacts_json', '[]')
             try:
                 contacts_data = json.loads(contacts_json)
@@ -63,6 +68,7 @@ def project_create(request):
         form = ProjectForm()
     return render(request, 'project_create.html', {'form': form})
 
+
 @login_required
 def project_edit(request, project_id):
     project = get_object_or_404(Project, id=project_id)
@@ -76,7 +82,8 @@ def project_edit(request, project_id):
         form = ProjectForm(instance=project)
     return render(request, 'project_edit.html', {'form': form, 'project': project})
 
-login_required
+
+@login_required
 def project_delete(request, project_id):
     project = get_object_or_404(Project, id=project_id)
 
@@ -91,6 +98,7 @@ def project_delete(request, project_id):
 
     return render(request, 'project_delete.html', {'project': project})
 
+
 @login_required
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
@@ -99,6 +107,7 @@ def project_detail(request, project_id):
     show_closed = request.GET.get('show_closed') == '1'
     status_options = ['new', 'in progress', 'completed', 'cancelled']
     contacts = Contact.objects.filter(project=project)
+
     if selected_statuses:
         status_filter = Q(status__in=selected_statuses)
     elif show_closed:
@@ -132,6 +141,7 @@ def project_detail(request, project_id):
         "status_options": status_options,
     }
     return render(request, "project_detail.html", context)
+
 
 @require_POST
 @login_required
