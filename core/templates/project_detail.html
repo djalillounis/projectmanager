@@ -142,7 +142,7 @@
 <script>
   function deleteContact(contactId) {
     if (!confirm("Are you sure you want to delete this contact?")) return;
-  
+
     fetch("{% url 'delete_contact' 0 %}".replace("0", contactId), {
       method: "POST",
       headers: {
@@ -154,11 +154,11 @@
       }
     });
   }
-  
+
   document.getElementById("contact-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const formData = new FormData(this);
-  
+
     fetch("{% url 'add_contact' project.id %}", {
       method: "POST",
       headers: {
@@ -173,14 +173,14 @@
       }
     });
   });
-  
+
   document.getElementById("project-info-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const data = {
       name: document.getElementById("project-name").value,
       description: document.getElementById("project-description").value
     };
-  
+
     fetch("{% url 'update_project_info' project.id %}", {
       method: "POST",
       headers: {
@@ -195,8 +195,8 @@
       }
     });
   });
-  
-  // Toggle edit form visibility on pencil click
+
+  // Toggle edit form visibility
   document.querySelectorAll(".edit-contact-btn").forEach(btn => {
     btn.addEventListener("click", function () {
       const card = this.closest(".contact-card");
@@ -204,15 +204,15 @@
       panel.classList.toggle("d-none");
     });
   });
-  
-  // Handle contact update form
+
+  // Contact update handler
   document.querySelectorAll(".edit-contact-form").forEach(form => {
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       const contactId = this.dataset.id;
       const formData = new FormData(this);
-  
-      fetch(`/contacts/update/${contactId}/`, {
+
+      fetch(`/contacts/${contactId}/update/`, {
         method: "POST",
         headers: {
           "X-CSRFToken": getCookie("csrftoken")
@@ -222,40 +222,43 @@
       .then(res => res.json())
       .then(data => {
         if (data.success) {
+          alert("Contact updated.");
           location.reload();
         } else {
-          alert("Update failed.");
+          alert("Update failed: " + JSON.stringify(data.errors));
         }
       });
     });
-  
-    // Delete contact from within edit panel
-    form.querySelector('.delete-contact-btn').addEventListener("click", function () {
-      if (confirm("Delete this contact?")) {
-        const contactId = form.dataset.id;
-        fetch(`/contacts/delete/${contactId}/`, {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": getCookie("csrftoken")
-          }
-        }).then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              document.getElementById(`contact-${contactId}`).remove();
+
+    const deleteBtn = form.querySelector('.delete-contact-btn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", function () {
+        if (confirm("Delete this contact?")) {
+          const contactId = form.dataset.id;
+          fetch(`/contacts/${contactId}/delete/`, {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": getCookie("csrftoken")
             }
-          });
-      }
-    });
+          }).then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                document.getElementById(`contact-${contactId}`).remove();
+              }
+            });
+        }
+      });
+    }
   });
-  
-  // Get CSRF token
+
+  // CSRF helper
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
       const cookies = document.cookie.split(";");
       for (let cookie of cookies) {
         cookie = cookie.trim();
-        if (cookie.substring(0, name.length + 1) === name + "=") {
+        if (cookie.startsWith(name + "=")) {
           cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
           break;
         }
@@ -263,6 +266,5 @@
     }
     return cookieValue;
   }
-  </script>
-  {% endblock %}
-  
+</script>
+{% endblock %}
