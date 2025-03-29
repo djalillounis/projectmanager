@@ -13,7 +13,6 @@ from core.forms import ProjectForm, ContactForm
 
 @login_required
 def project_list(request):
-    """Dashboard-style project list with counts."""
     projects = Project.objects.all()
     today = date.today()
 
@@ -27,6 +26,49 @@ def project_list(request):
         ).exclude(status='completed').count()
 
     return render(request, 'project/project_list.html', {'projects': projects})
+
+
+@login_required
+def project_create(request):
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES)
+        if form.is_valid():
+            project = form.save()
+            messages.success(request, "Project created successfully.")
+            return redirect('project_detail', project_id=project.id)
+    else:
+        form = ProjectForm()
+    return render(request, 'project/project_create.html', {'form': form})
+
+
+@login_required
+def project_edit(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES, instance=project)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Project updated successfully.")
+            return redirect('project_detail', project_id=project.id)
+    else:
+        form = ProjectForm(instance=project)
+    return render(request, 'project/project_edit.html', {'form': form, 'project': project})
+
+
+@login_required
+def project_delete(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    if request.method == 'POST':
+        confirm_name = request.POST.get('confirm_name', '').strip()
+        if confirm_name.lower() == project.name.strip().lower():
+            project.delete()
+            messages.success(request, "Project deleted successfully.")
+            return redirect('project_list')
+        else:
+            messages.error(request, "Project name does not match. Deletion canceled.")
+
+    return render(request, 'project/project_delete.html', {'project': project})
 
 
 @login_required
