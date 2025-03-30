@@ -31,7 +31,7 @@
         <!-- Due Date -->
         <div class="mb-3">
           <label for="id_due_date" class="form-label">Due Date</label>
-          {{ form.due_date }}
+          {{ form.due_date.as_widget(attrs={'type': 'date', 'class': 'form-control'}) }}
         </div>
         
         <!-- Status -->
