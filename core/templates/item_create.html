@@ -2,13 +2,12 @@
 {% load static %}
 {% block title %}Add New Item{% endblock %}
 
-
 {% block content %}
 <div class="container mt-5">
     <h2 class="mb-4">Add New Item to Project: {{ project.name }}</h2>
     <form method="post" class="mb-3">
         {% csrf_token %}
-        
+
         <!-- Item Type -->
         <div class="row mb-3">
             <label for="id_item_type" class="col-sm-2 col-form-label">Item Type</label>
@@ -16,23 +15,19 @@
                 {{ form.item_type }}
             </div>
         </div>
-        
-        <!-- Short Description -->
+
+        <!-- Short Description + Due Date on same row -->
         <div class="row mb-3">
-            <label for="id_short_description" class="col-sm-2 col-form-label">Short Description</label>
-            <div class="col-sm-10">
+            <div class="col-md-6">
+                <label for="id_short_description" class="form-label">Short Description</label>
                 {{ form.short_description }}
             </div>
-        </div>
-        
-        <!-- Due Date -->
-        <div class="row mb-3">
-            <label for="id_due_date" class="col-sm-2 col-form-label">Due Date</label>
-            <div class="col-sm-10">
+            <div class="col-md-6">
+                <label for="id_due_date" class="form-label">Due Date</label>
                 {{ form.due_date }}
             </div>
         </div>
-        
+
         <!-- Status -->
         <div class="row mb-3">
             <label for="id_status" class="col-sm-2 col-form-label">Status</label>
@@ -40,7 +35,7 @@
                 {{ form.status }}
             </div>
         </div>
-        
+
         <!-- Priority -->
         <div class="row mb-3">
             <label for="id_priority" class="col-sm-2 col-form-label">Priority</label>
@@ -48,7 +43,7 @@
                 {{ form.priority }}
             </div>
         </div>
-        
+
         <!-- Owner -->
         <div class="row mb-3">
             <label for="id_owner" class="col-sm-2 col-form-label">Owner</label>
@@ -56,7 +51,7 @@
                 {{ form.owner }}
             </div>
         </div>
-        
+
         <!-- Next Step Owner -->
         <div class="row mb-3">
             <label for="id_next_step_owner" class="col-sm-2 col-form-label">Next Step Owner</label>
@@ -72,7 +67,8 @@
                 {{ form.next_step }}
             </div>
         </div>
-        
+
+        <!-- Action Buttons -->
         <button type="submit" class="btn btn-primary">Create Item</button>
         <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary ms-2">Cancel</a>
     </form>
