@@ -19,8 +19,15 @@ class ItemForm(forms.ModelForm):
             'priority', 'owner', 'next_step_owner', 'next_step'
         ]
         widgets = {
+            'short_description': forms.TextInput(attrs={'class': 'form-control'}),
             'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'next_step': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Describe the next step', 'class': 'form-control'}),
+            'owner': forms.TextInput(attrs={'class': 'form-control'}),
+            'next_step_owner': forms.TextInput(attrs={'class': 'form-control'}),
+            'next_step': forms.Textarea(attrs={
+                'rows': 3,
+                'placeholder': 'Describe the next step',
+                'class': 'form-control'
+            }),
         }
 
 

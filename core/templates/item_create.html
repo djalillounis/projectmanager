@@ -3,74 +3,65 @@
 {% block title %}Add New Item{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Add New Item to Project: {{ project.name }}</h2>
+<div class="container mt-5" style="max-width: 800px;">
+    <h2 class="mb-4 text-center">Add New Item to Project: {{ project.name }}</h2>
+
     <form method="post" class="mb-3">
         {% csrf_token %}
 
         <!-- Item Type -->
-        <div class="row mb-3">
-            <label for="id_item_type" class="col-sm-2 col-form-label">Item Type</label>
-            <div class="col-sm-10">
-                {{ form.item_type }}
-            </div>
+        <div class="mb-3">
+            <label for="id_item_type" class="form-label">Item Type</label>
+            {{ form.item_type }}
         </div>
 
-        <!-- Short Description + Due Date on same row -->
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="id_short_description" class="form-label">Short Description</label>
-                {{ form.short_description }}
-            </div>
-            <div class="col-md-6">
-                <label for="id_due_date" class="form-label">Due Date</label>
-                {{ form.due_date }}
-            </div>
+        <!-- Short Description -->
+        <div class="mb-3">
+            <label for="id_short_description" class="form-label">Short Description</label>
+            {{ form.short_description }}
+        </div>
+
+        <!-- Due Date -->
+        <div class="mb-3">
+            <label for="id_due_date" class="form-label">Due Date</label>
+            {{ form.due_date }}
         </div>
 
         <!-- Status -->
-        <div class="row mb-3">
-            <label for="id_status" class="col-sm-2 col-form-label">Status</label>
-            <div class="col-sm-10">
-                {{ form.status }}
-            </div>
+        <div class="mb-3">
+            <label for="id_status" class="form-label">Status</label>
+            {{ form.status }}
         </div>
 
         <!-- Priority -->
-        <div class="row mb-3">
-            <label for="id_priority" class="col-sm-2 col-form-label">Priority</label>
-            <div class="col-sm-10">
-                {{ form.priority }}
-            </div>
+        <div class="mb-3">
+            <label for="id_priority" class="form-label">Priority</label>
+            {{ form.priority }}
         </div>
 
         <!-- Owner -->
-        <div class="row mb-3">
-            <label for="id_owner" class="col-sm-2 col-form-label">Owner</label>
-            <div class="col-sm-10">
-                {{ form.owner }}
-            </div>
+        <div class="mb-3">
+            <label for="id_owner" class="form-label">Owner</label>
+            {{ form.owner }}
         </div>
 
         <!-- Next Step Owner -->
-        <div class="row mb-3">
-            <label for="id_next_step_owner" class="col-sm-2 col-form-label">Next Step Owner</label>
-            <div class="col-sm-10">
-                {{ form.next_step_owner }}
-            </div>
+        <div class="mb-3">
+            <label for="id_next_step_owner" class="form-label">Next Step Owner</label>
+            {{ form.next_step_owner }}
         </div>
 
         <!-- Next Step -->
-        <div class="row mb-3">
-            <label for="id_next_step" class="col-sm-2 col-form-label">Next Step</label>
-            <div class="col-sm-10">
-                {{ form.next_step }}
-            </div>
+        <div class="mb-3">
+            <label for="id_next_step" class="form-label">Next Step</label>
+            {{ form.next_step }}
         </div>
 
-        <!-- Action Buttons -->
-        <button type="submit" class="btn btn-primary">Create Item</button>
-        <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary ms-2">Cancel</a>
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-primary me-2">Create Item</button>
+            <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 </div>
 {% endblock %}
