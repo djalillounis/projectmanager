@@ -14,9 +14,13 @@ class ProjectForm(forms.ModelForm):
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ['item_type', 'short_description', 'due_date', 'status', 'priority', 'owner', 'next_step_owner', 'next_step']
+        fields = [
+            'item_type', 'short_description', 'due_date', 'status',
+            'priority', 'owner', 'next_step_owner', 'next_step'
+        ]
         widgets = {
-            'next_step': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Describe the next step'}),
+            'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'next_step': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Describe the next step', 'class': 'form-control'}),
         }
 
 
