@@ -3,62 +3,59 @@
 {% block title %}Add New Item{% endblock %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 800px;">
-    <h2 class="mb-4 text-center">Add New Item to Project: {{ project.name }}</h2>
-
+<div class="container mt-5">
+    <h2 class="mb-4 text-purple">Add New Item to Project: {{ project.name }}</h2>
     <form method="post" class="mb-3">
         {% csrf_token %}
 
-        <!-- Item Type -->
-        <div class="mb-3">
-            <label for="id_item_type" class="form-label">Item Type</label>
-            {{ form.item_type }}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_item_type" class="form-label">Item Type</label>
+                {{ form.item_type }}
+            </div>
         </div>
 
-        <!-- Short Description -->
-        <div class="mb-3">
-            <label for="id_short_description" class="form-label">Short Description</label>
-            {{ form.short_description }}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_short_description" class="form-label">Short Description</label>
+                {{ form.short_description }}
+            </div>
+            <div class="col-md-6">
+                <label for="id_due_date" class="form-label">Due Date</label>
+                {{ form.due_date }}
+            </div>
         </div>
 
-        <!-- Due Date -->
-        <div class="mb-3">
-            <label for="id_due_date" class="form-label">Due Date</label>
-            {{ form.due_date }}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_status" class="form-label">Status</label>
+                {{ form.status }}
+            </div>
+            <div class="col-md-6">
+                <label for="id_priority" class="form-label">Priority</label>
+                {{ form.priority }}
+            </div>
         </div>
 
-        <!-- Status -->
-        <div class="mb-3">
-            <label for="id_status" class="form-label">Status</label>
-            {{ form.status }}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_owner" class="form-label">Owner</label>
+                {{ form.owner }}
+            </div>
+            <div class="col-md-6">
+                <label for="id_next_step_owner" class="form-label">Next Step Owner</label>
+                {{ form.next_step_owner }}
+            </div>
         </div>
 
-        <!-- Priority -->
-        <div class="mb-3">
-            <label for="id_priority" class="form-label">Priority</label>
-            {{ form.priority }}
+        <div class="row mb-4">
+            <div class="col-12">
+                <label for="id_next_step" class="form-label">Next Step</label>
+                {{ form.next_step }}
+            </div>
         </div>
 
-        <!-- Owner -->
-        <div class="mb-3">
-            <label for="id_owner" class="form-label">Owner</label>
-            {{ form.owner }}
-        </div>
-
-        <!-- Next Step Owner -->
-        <div class="mb-3">
-            <label for="id_next_step_owner" class="form-label">Next Step Owner</label>
-            {{ form.next_step_owner }}
-        </div>
-
-        <!-- Next Step -->
-        <div class="mb-3">
-            <label for="id_next_step" class="form-label">Next Step</label>
-            {{ form.next_step }}
-        </div>
-
-        <!-- Buttons -->
-        <div class="d-flex justify-content-end mt-4">
+        <div class="d-flex justify-content-start">
             <button type="submit" class="btn btn-primary me-2">Create Item</button>
             <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Cancel</a>
         </div>
