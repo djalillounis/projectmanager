@@ -4,61 +4,72 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4 text-purple">Add New Item to Project: {{ project.name }}</h2>
-    <form method="post" class="mb-3">
-        {% csrf_token %}
+  <h2 class="mb-4 text-purple">Add New Item to Project: {{ project.name }}</h2>
 
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="id_item_type" class="form-label">Item Type</label>
-                {{ form.item_type }}
-            </div>
-        </div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="row g-4">
+      
+      <!-- Left: Item Details -->
+      <div class="col-md-6">
+        <div class="card p-4">
+          <h4 class="text-purple">Item Details</h4>
 
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="id_short_description" class="form-label">Short Description</label>
-                {{ form.short_description }}
-            </div>
-            <div class="col-md-6">
-                <label for="id_due_date" class="form-label">Due Date</label>
-                {{ form.due_date }}
-            </div>
-        </div>
+          <div class="mb-3">
+            <label for="id_item_type" class="form-label">Item Type</label>
+            {{ form.item_type }}
+          </div>
 
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="id_status" class="form-label">Status</label>
-                {{ form.status }}
-            </div>
-            <div class="col-md-6">
-                <label for="id_priority" class="form-label">Priority</label>
-                {{ form.priority }}
-            </div>
-        </div>
+          <div class="mb-3">
+            <label for="id_short_description" class="form-label">Short Description</label>
+            {{ form.short_description }}
+          </div>
 
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="id_owner" class="form-label">Owner</label>
-                {{ form.owner }}
-            </div>
-            <div class="col-md-6">
-                <label for="id_next_step_owner" class="form-label">Next Step Owner</label>
-                {{ form.next_step_owner }}
-            </div>
-        </div>
+          <div class="mb-3">
+            <label for="id_due_date" class="form-label">Due Date</label>
+            {{ form.due_date }}
+          </div>
 
-        <div class="row mb-4">
-            <div class="col-12">
-                <label for="id_next_step" class="form-label">Next Step</label>
-                {{ form.next_step }}
-            </div>
-        </div>
+          <div class="mb-3">
+            <label for="id_status" class="form-label">Status</label>
+            {{ form.status }}
+          </div>
 
-        <div class="d-flex justify-content-start">
-            <button type="submit" class="btn btn-primary me-2">Create Item</button>
-            <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Cancel</a>
+          <div class="mb-3">
+            <label for="id_priority" class="form-label">Priority</label>
+            {{ form.priority }}
+          </div>
         </div>
-    </form>
+      </div>
+
+      <!-- Right: Ownership & Next Steps -->
+      <div class="col-md-6">
+        <div class="card p-4">
+          <h4 class="text-purple">Optional Info</h4>
+
+          <div class="mb-3">
+            <label for="id_owner" class="form-label">Owner</label>
+            {{ form.owner }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_next_step_owner" class="form-label">Next Step Owner</label>
+            {{ form.next_step_owner }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_next_step" class="form-label">Next Step</label>
+            {{ form.next_step }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex justify-content-end mt-4">
+      <button type="submit" class="btn btn-primary me-2">Create Item</button>
+      <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
 </div>
 {% endblock %}
