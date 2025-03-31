@@ -1,7 +1,7 @@
 import csv
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from core.models import Project, Task  # Adjust the import paths as needed
+from ..models import Project, Task  # Adjust the import paths as needed
 
 def export_tasks_csv(request, project_id):
     """
