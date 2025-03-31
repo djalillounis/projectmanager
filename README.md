@@ -1,5 +1,9 @@
 --
 
+
+Test comint
+
+
 ### **App Overview**
 
 The application is a web‑based project management system built with Django. It lets authenticated users create and manage projects and items (such as tasks, sub‑projects, and activities) under those projects. The app provides rich functionality including inline editing, file uploads, and update tracking—all integrated into a responsive, Bootstrap‑based UI.
