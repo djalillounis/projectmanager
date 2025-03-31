@@ -29,4 +29,7 @@ urlpatterns = [
 
     # Auth
     path('logout/', views.custom_logout, name='logout'),
+
+     # New Export Tasks CSV feature
+    path('projects/<int:project_id>/export-tasks/', export.export_tasks_csv, name='export_tasks_csv'),
 ]
