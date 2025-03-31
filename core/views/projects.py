@@ -25,7 +25,7 @@ def project_list(request):
             due_date__lt=today
         ).exclude(status='completed').count()
 
-    return render(request, 'project/project_list.html', {'projects': projects})
+    return render(request, 'project_list.html', {'projects': projects})
 
 
 @login_required
