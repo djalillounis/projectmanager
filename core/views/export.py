@@ -1,14 +1,14 @@
 import csv
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from ..models import Project, Task  # Adjust the import paths as needed
+from ..models import Project, Item  # Adjust the import paths as needed
 
 def export_tasks_csv(request, project_id):
     """
     Export all tasks for the specified project to a CSV file.
     """
     project = get_object_or_404(Project, id=project_id)
-    tasks = Task.objects.filter(project=project)
+    tasks = Item.objects.filter(project=project)
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename="project_{project.id}_tasks.csv"'
